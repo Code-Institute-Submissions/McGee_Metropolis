@@ -40,11 +40,16 @@ def place_zone(grid, zone_type, x, y):
 
 def get_resources():
     """Source and display resources from the 'resources' worksheet."""
-    resources = SHEET.worksheet('resources')
-    data = resources.get_all_values()
-    print("Current Resources:")
-    for row in data:
-        print(row)
+    try:
+        resources = SHEET.worksheet('resources')
+        data = resources.get_all_values()
+        print("\nCurrent Resources:")
+        for row in data:
+            print(row)
+    except gspread.exceptions.WorksheetNotFound:
+        print("Error: 'resources' worksheet not found.")
+    except Exception as e:
+        print(f"Error while accessing resources: {e}")
 
 def main():
     # Initialize the grid and print it to the console
