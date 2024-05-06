@@ -18,7 +18,6 @@ GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('McGee_Metropolis')
 
 
-
 #Initialise the game grid
 def initialize_grid(size):
     """Initialise the game grid with the specified size."""
@@ -37,6 +36,18 @@ def place_zone(grid, zone_type, x, y):
         print(f"Zone placed at {x}, {y}.")
     else:
         print("This plot is already occupied.")
+
+def fetch_zone_counts():
+    """Fetch the counts of each zone type from Google Sheets."""
+    try:
+        zone_sheet = SHEET.worksheet('zones')
+        data = zone_sheet.get_all_values()
+         # Create a dictionary where the key is the zone type and the value is the count
+        zone_counts = {row[0]: int(row[1]) for row in data[1:]}  # Skip header row
+        return zone_counts
+    except Exception as e:
+        print(f"Error fetching zone counts: {e}")
+        return {}
 
 def get_resources():
     """Source and display resources from the 'resources' worksheet."""
