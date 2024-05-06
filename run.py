@@ -17,8 +17,7 @@ SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('McGee_Metropolis')
 
-resources = SHEET.worksheet('resources')
-data = resources.get_all_values()
+
 
 #Initialise the game grid
 def initialize_grid(size):
@@ -38,6 +37,14 @@ def place_zone(grid, zone_type, x, y):
         print(f"Zone placed at {x}, {y}.")
     else:
         print("This plot is already occupied.")
+
+def get_resources():
+    """Source and display resources from the 'resources' worksheet."""
+    resources = SHEET.worksheet('resources')
+    data = resources.get_all_values()
+    print("Current Resources:")
+    for row in data:
+        print(row)
 
 def main():
     # Initialize the grid and print it to the console
