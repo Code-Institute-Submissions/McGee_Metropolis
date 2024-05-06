@@ -1,5 +1,6 @@
 import gspread
 from google.oauth2.service_account import Credentials
+import random #imports the random module
 
 #Constants
 
@@ -30,7 +31,7 @@ def fetch_zone_counts():
         return {}
 
 def initialize_random_grid(size, zone_counts):
-"""Initialise the game grid with random zones based on fetched counts."""
+    """Initialise the game grid with random zones based on fetched counts."""
     grid = [['-' for _ in range(size)] for _ in range(size)]
     positions = [(x, y) for x in range(size) for y in range(size)]
     random.shuffle(positions)  # Shuffle positions for random placement
