@@ -58,7 +58,7 @@ def main():
     print_grid(grid)
 
     while True:
-        action = input("\nChoose action (zone/resources/exit): ").lower()
+        action = input("\nChoose the action you would like to take, build a zone, check resources or exit the game: (zone/resources/exit): ").lower()
         if action == 'zone':
             try:
                 # Get coordinates from the player
@@ -68,7 +68,7 @@ def main():
                 # Ensure coordinates are within grid boundary
                 if 0 <= x < GRID_SIZE and 0 <= y < GRID_SIZE:
                 # Get the zone type (R for Residential, C for Commercial, I for Industrial)
-                    zone_type = input("Enter zone type (R/C/I): ").upper()
+                    zone_type = input("Enter zone type - Residential = R, Commercial = C, Industrial = I (R/C/I): ").upper()
                     if zone_type in ['R', 'C', 'I']:
                         place_zone(grid, zone_type, x, y)
                     else:
