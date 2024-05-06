@@ -63,8 +63,13 @@ def get_resources():
         print(f"Error while accessing resources: {e}")
 
 def main():
-    # Initialize the grid and print it to the console
-    grid = initialize_grid(GRID_SIZE)
+    zone_counts = fetch_zone_counts()
+    if zone_counts:
+        # If counts are successfully fetched, initialise the grid with these counts
+        grid = initialize_random_grid(GRID_SIZE, zone_counts)
+    else:
+        # If fetching fails, fallback to an empty grid
+        grid = initialize_grid(GRID_SIZE)
     print("Initial Game Grid:")
     print_grid(grid)
 
