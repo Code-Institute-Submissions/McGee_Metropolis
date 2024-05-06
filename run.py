@@ -58,26 +58,33 @@ def main():
     print_grid(grid)
 
     while True:
-        try:
-            # Get coordinates from the player
-            x = int(input(f"Enter X coordinate for building (0-{GRID_SIZE-1}): "))
-            y = int(input(f"Enter Y coordinate for building (0-{GRID_SIZE-1}): "))
+        action = input("\nChoose action (zone/resources/exit): ").lower()
+        if action == 'zone':
+            try:
+                # Get coordinates from the player
+                x = int(input(f"Enter X coordinate for building zone (0-{GRID_SIZE-1}): "))
+                y = int(input(f"Enter Y coordinate for building zone (0-{GRID_SIZE-1}): "))
             
-            # Ensure coordinates are within grid boundary
-            if 0 <= x < GRID_SIZE and 0 <= y < GRID_SIZE:
+                # Ensure coordinates are within grid boundary
+                if 0 <= x < GRID_SIZE and 0 <= y < GRID_SIZE:
                 # Get the zone type (R for Residential, C for Commercial, I for Industrial)
-                zone_type = input("Enter zone type (R/C/I): ").upper()
-                if zone_type in ['R', 'C', 'I']:
-                    place_zone(grid, zone_type, x, y)
+                    zone_type = input("Enter zone type (R/C/I): ").upper()
+                    if zone_type in ['R', 'C', 'I']:
+                        place_zone(grid, zone_type, x, y)
+                    else:
+                        print("Invalid zone type. Please use 'R', 'C', or 'I'.")
                 else:
-                    print("Invalid zone type. Please use 'R', 'C', or 'I'.")
-            else:
-                print(f"Invalid coordinates. Please enter values between 0 and {GRID_SIZE - 1}.")
-        except ValueError:
-            print("Invalid input. Please enter numeric coordinates.")
-
-        print_grid(grid)
-
+                    print(f"Invalid coordinates. Please enter values between 0 and {GRID_SIZE - 1}.")
+            except ValueError:
+                print("Invalid input. Please enter numeric grid coordinates.")
+            print_grid(grid)
+        elif action == 'resources':
+            get_resources()
+        elif action == 'exit':
+            print("Exiting the game.")
+            break
+        else:
+            print("Invalid action. Please choose 'zone', 'resources', or 'exit'.")
 
 if __name__ == "__main__":
     main()
