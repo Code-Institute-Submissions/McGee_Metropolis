@@ -6,11 +6,11 @@ import random #imports the random module
 
 GRID_SIZE = 15
 ZONE_SYMBOLS = {
-    'R': '🏠',  # Residential
-    'C': '🏢',  # Commercial
-    'I': '🏭',  # Industrial
-    'S': '🏫',  # School
-    'H': '🏥',  # Hospital
+    'Residential': '🏠',  # Residential
+    'Commercial': '🏢',  # Commercial
+    'Industrial': '🏭',  # Industrial
+    'School': '🏫',  # School
+    'Hospital': '🏥',  # Hospital
     '-': ' '    # Empty space
 }
 
@@ -62,7 +62,7 @@ def print_grid(grid):
     print(header)
     print("   " + "---" * len(grid[0]))  # Top border for grid
     for index, row in enumerate(grid):
-        row_str = f"{index:2}|" + " ".join(f"{cell:2}" for cell in row)
+        row_str = f"{index:2}|" + " ".join(f"{ZONE_SYMBOLS[cell]:^3}" for cell in row)
         print(row_str)
     print()  # Print on a new line for improved visibility
 
