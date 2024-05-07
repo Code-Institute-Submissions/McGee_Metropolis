@@ -57,14 +57,21 @@ def initialize_grid(size):
     return [['-' for _ in range(size)] for _ in range(size)]
 
 def print_grid(grid):
-    """Print the grid to the console with headers and aligned rows."""
-    header = "   " + " ".join(f"{i:2}" for i in range(len(grid[0])))  # Column headers
+    """Print the grid to the console with boxed borders and consistent alignment."""
+    def draw_horizontal_border(size):
+        """Function to draw the top or bottom border of the grid."""
+        return "  +" + "+".join(["---"] * size) + "+"
+    
+    #Column headers
+    header = "   " + " ".join(f"{i:2}" for i in range(len(grid[0])))
     print(header)
-    print("   " + "---" * len(grid[0]))  # Top border for grid
+    print(draw_horizontal_border(len(grid[0])))  # Top border for grid
+
     for index, row in enumerate(grid):
-        row_str = f"{index:2}|" + " ".join(f"{ZONE_SYMBOLS[cell]:^3}" for cell in row)
+        # Add separators to each row
+        row_str = f"{index:2}|" + "|".join(f"{ZONE_SYMBOLS.get(cell, '??'):<1} " for cell in row) + "|"
         print(row_str)
-    print()  # Print on a new line for improved visibility
+        print(draw_horizontal_border(len(grid[0])))  # Add separator after each row
 
 def place_zone(grid, zone_type, x, y):
     """Place a zone on the grid at the specified coordinates."""
