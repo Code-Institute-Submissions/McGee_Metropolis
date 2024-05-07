@@ -49,9 +49,13 @@ def initialize_grid(size):
     return [['-' for _ in range(size)] for _ in range(size)]
 
 def print_grid(grid):
-    """Print the grid to the console."""
-    for row in grid:
-        print(' '.join(row))
+    """Print the grid to the console with headers and aligned rows."""
+    header = "   " + " ".join(f"{i:2}" for i in range(len(grid[0])))  # Column headers
+    print(header)
+    print("   " + "---" * len(grid[0]))  # Top border for grid
+    for index, row in enumerate(grid):
+        row_str = f"{index:2}|" + " ".join(f"{cell:2}" for cell in row)
+        print(row_str)
     print()  # Print on a new line for improved visibility
 
 def place_zone(grid, zone_type, x, y):
