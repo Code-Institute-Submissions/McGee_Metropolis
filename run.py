@@ -4,7 +4,15 @@ import random #imports the random module
 
 #Constants
 
-GRID_SIZE = 15 
+GRID_SIZE = 15
+ZONE_SYMBOLS = {
+    'R': '🏠',  # Residential
+    'C': '🏢',  # Commercial
+    'I': '🏭',  # Industrial
+    'S': '🏫',  # School
+    'H': '🏥',  # Hospital
+    '-': ' '    # Empty space
+}
 
 #Google Sheets setup
 SCOPE = [
