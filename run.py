@@ -11,7 +11,7 @@ ZONE_SYMBOLS = {
     'Industrial': '🏭',  # Industrial
     'School': '🏫',  # School
     'Hospital': '🏥',  # Hospital
-    '-': ' '    # Empty space
+    '-': '◯'    # Empty space
 }
 
 #Google Sheets setup
@@ -58,20 +58,25 @@ def initialize_grid(size):
 
 def print_grid(grid):
     """Print the grid to the console with boxed borders and consistent alignment."""
-    def draw_horizontal_border(size):
+    cell_width = 5
+    num_columns = len(grid[0])
+
+    def draw_horizontal_border():
         """Function to draw the top or bottom border of the grid."""
-        return "  +" + "+".join(["---"] * size) + "+"
+        return '+' + ('-' * cell_width + '+') * num_columns
     
     #Column headers
-    header = "   " + " ".join(f"{i:2}" for i in range(len(grid[0])))
+    header_padding = " " * ((cell_width * num_columns + num_columns) // 2 - (num_columns * 2))
+    header = header_padding + " ".join(f"{i:^{cell_width}}" for i in range(num_columns))
     print(header)
-    print(draw_horizontal_border(len(grid[0])))  # Top border for grid
+    print(draw_horizontal_border())  # Top border for grid
 
     for index, row in enumerate(grid):
         # Add separators to each row
-        row_str = f"{index:2}|" + "|".join(f"{ZONE_SYMBOLS.get(cell, '??'):<1} " for cell in row) + "|"
+        row_str = f"{index:<2}|" + "|".join(f"{ZONE_SYMBOLS.get(cell, '??'):^{cell_width}}" for cell in row) + "|"
         print(row_str)
-        print(draw_horizontal_border(len(grid[0])))  # Add separator after each row
+        print(draw_horizontal_border()) # Add separator after each row
+    print() # New line for improved spacing
 
 def place_zone(grid, zone_type, x, y):
     """Place a zone on the grid at the specified coordinates."""
