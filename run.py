@@ -51,11 +51,6 @@ def initialize_random_grid(size, zone_counts):
 
     return grid
 
-#Initialise an empty game grid
-def initialize_grid(size):
-    """Initialise an empty game grid with the specified size."""
-    return [['-' for _ in range(size)] for _ in range(size)]
-
 def print_grid(grid):
     """Print the grid to the console with boxed borders and consistent alignment."""
     cell_width = 4
