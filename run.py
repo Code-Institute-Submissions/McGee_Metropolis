@@ -38,6 +38,11 @@ def fetch_zone_counts():
         print(f"Error fetching zone counts: {e}")
         return {}
 
+#Initialise an empty game grid
+def initialize_grid(size):
+    """Initialise an empty game grid with the specified size."""
+    return [['-' for _ in range(size)] for _ in range(size)]
+
 def initialize_random_grid(size, zone_counts):
     """Initialise the game grid with random zones based on fetched counts."""
     grid = [['-' for _ in range(size)] for _ in range(size)]
@@ -111,6 +116,25 @@ def fetch_events():
     events = events_sheet.get_all_records()
     return events
 
+def apply_random_event(events, player_resources):
+    """Randomly select and apply an event effect."""
+    if not events:
+        return
+    event = random.choice(events)
+    if event['Active'].lower() == 'no':
+        print(f"Oh no, a major issue is impacting the city today: {event['Description']}")
+        # Apply the event's impact here based on its type, modify player_resources accordingly
+        impact_type = event['Impact Type']
+        impact_value = event['Impact Value']
+        if impact_type in player_resources:
+            if isinstance(impact_value, str) and '%' in impact_value:
+                impact_value = float(impact_value.strip('%')) / 100
+                player_resources[impact_type] *= (1 + impact_value)
+            else:
+                player_resources[impact_type] += impact_value
+        # Set the event as active for its duration
+        event['Active'] = 'Yes'
+
 def confirm_exit():
     """Confirm before exiting the game."""
     confirm = input("Are you sure you want to exit the game? (yes/no): ").lower()
@@ -118,6 +142,8 @@ def confirm_exit():
 
 def main():
     zone_counts = fetch_zone_counts()
+    events = fetch_events()
+
     if zone_counts:
         # If counts are successfully fetched, initialise the grid with these counts
         grid = initialize_random_grid(GRID_SIZE, zone_counts)
@@ -129,11 +155,16 @@ def main():
 
     #Game loop for handling game actions
     while True:
+        print("\nGood Morning! A New day has started...")
+        apply_random_event(events, player_resources)
+
         action = input("\nChoose the action you would like to take, build a zone, check resources or exit the game: (zone/resources/exit): ").lower()
         if action == 'zone':
             handle_zone_action(grid)
         elif action == 'resources':
-            get_resources()
+            print("Current Resources:")
+            for key, value in player_resources.items():
+                print(f"{key}: {value}")
         elif action == 'exit':
             if confirm_exit():
                 print("Exiting the game.")
