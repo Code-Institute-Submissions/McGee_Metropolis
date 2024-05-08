@@ -4,7 +4,7 @@ import random #imports the random module
 
 #Constants
 
-GRID_SIZE = 15
+GRID_SIZE = 10
 ZONE_SYMBOLS = {
     'Residential': '🟢',  # Residential
     'Commercial': '🟣',  # Commercial
@@ -104,6 +104,12 @@ def handle_zone_action(grid):
     except ValueError:
         print("Invalid input. Please enter numeric grid coordinates.")
     print_grid(grid)
+
+def fetch_events():
+    """Fetch event data from the Google Sheet."""
+    events_sheet = SHEET.worksheet('events')
+    events = events_sheet.get_all_records()
+    return events
 
 def confirm_exit():
     """Confirm before exiting the game."""
