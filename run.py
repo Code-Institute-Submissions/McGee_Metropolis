@@ -128,19 +128,30 @@ def update_resources_in_sheet(player_resources):
         cell = resources_sheet.find(resource_type)  # Find the cell with the resource type
         resources_sheet.update_cell(cell.row, cell.col + 1, str(value))  # Update the next column
 
-def handle_zone_action(grid):
+def handle_zone_action(grid, player_resources):
     """Handle the action of placing a zon and check resources."""
     try:
         x = int(input(f"Enter X coordinate for building a zone (0-{GRID_SIZE-1}): "))
         y = int(input(f"Enter Y coordinate for building a zone (0-{GRID_SIZE-1}): "))
-        if 0 <= x < GRID_SIZE and 0 <= y < GRID_SIZE:
-            zone_type = input("Enter zone type - R (Residential), C (Commercial), I (Industrial), S (School), H (Hospital): ").upper()
-            if zone_type in ['R', 'C', 'I', 'S', 'H']:
+        zone_input = input("Enter zone type - R (Residential), C (Commercial), I (Industrial), S (School), H (Hospital): ").upper()
+
+        # Map input to full names for internal logic
+        zone_map = {
+            'R': 'Residential',
+            'C': 'Commercial',
+            'I': 'Industrial',
+            'S': 'School',
+            'H': 'Hospital'
+        }
+
+        if zone_input in zone_map:
+            zone_type = zone_map[zone_input]
+            if 0 <= x < GRID_SIZE and 0 <= y < GRID_SIZE:
                 place_zone(grid, zone_type, x, y, player_resources)
             else:
-                print("Invalid zone type. Please use 'R', 'C', 'I', 'S', or 'H'.")
+                print(f"Invalid coordinates. Please enter values between 0 and {GRID_SIZE - 1}.")
         else:
-            print(f"Invalid coordinates. Please enter values between 0 and {GRID_SIZE - 1}.")
+            print("Invalid zone type. Please use 'R', 'C', 'I', 'S', or 'H'.")
     except ValueError:
         print("Invalid input. Please enter numeric grid coordinates.")
     print_grid(grid)
