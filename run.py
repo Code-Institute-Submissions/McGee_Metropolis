@@ -170,6 +170,7 @@ def confirm_exit():
 def main():
     zone_counts = fetch_zone_counts()
     events = fetch_events()
+    player_resources = fetch_player_resources()
 
     if zone_counts:
         # If counts are successfully fetched, initialise the grid with these counts
@@ -187,7 +188,7 @@ def main():
 
         action = input("\nChoose the action you would like to take, build a zone, check resources or exit the game: (zone/resources/exit): ").lower()
         if action == 'zone':
-            handle_zone_action(grid)
+            handle_zone_action(grid, player_resources)
         elif action == 'resources':
             print("Current Resources:")
             for key, value in player_resources.items():
@@ -204,6 +205,8 @@ def main():
             print("  help - Show this help message.")
         else:
             print("Invalid action. Please choose 'zone', 'resources', or 'exit'.")
+
+        update_resources_in_sheet(player_resources)
 
 if __name__ == "__main__":
     main()
