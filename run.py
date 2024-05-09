@@ -72,7 +72,7 @@ def print_grid(grid):
 
     print()  # Ensure there's a new line after the grid for better spacing
 
-def place_zone(grid, zone_type, x, y, player resources):
+def place_zone(grid, zone_type, x, y, player_resources):
     """Place a zone on the grid at the specified coordinates if enough resources available."""
     zone_costs = {'Residential': 1250, 'Commercial': 450, 'Industrial': 450, 'School': 100, 'Hospital': 100}  # Costs of resources
     if player_resources['Money'] >= zone_costs[zone_type]:
@@ -86,12 +86,6 @@ def place_zone(grid, zone_type, x, y, player resources):
     else:
         print("Sorry, you do not enough money to build this zone right now.")
 
-def update_resources_in_sheet(player_resources):
-    """Update the resources back to Google Sheets."""
-    resources_sheet = SHEET.worksheet('resources')
-    for resource_type, value in player_resources.items():
-        cell = resources_sheet.find(resource_type)  # Find the cell with the resource type
-        resources_sheet.update_cell(cell.row, cell.col + 1, str(value))  # Update the next column
 
 def get_resources():
     """Source and display resources from the 'resources' worksheet."""
@@ -111,7 +105,14 @@ def fetch_player_resources():
     try:
         resources_sheet = SHEET.worksheet('resources')
         data = resources_sheet.get_all_records()  # Convert list to dictionaries
-        player_resources = {res['Resource Type']: int(res['Current Value'].replace(',', '')) for res in data}  # Data as integers and remove commas
+        player_resources = {}
+        for res in data:
+            resource_type = res['Resource Type']
+            current_value = res['Current Value']
+            # Check if the current value is a string and contains commas, replace commas if present
+            if isinstance(current_value, str) and ',' in current_value:
+                current_value = current_value.replace(',', '')
+            player_resources[resource_type] = int(current_value)
         return player_resources
     except gspread.exceptions.WorksheetNotFound:
         print("Error: 'resources' worksheet not found.")
@@ -119,6 +120,13 @@ def fetch_player_resources():
     except Exception as e:
         print(f"Error while accessing resources: {e}")
         return {}
+
+def update_resources_in_sheet(player_resources):
+    """Update the resources back to Google Sheets."""
+    resources_sheet = SHEET.worksheet('resources')
+    for resource_type, value in player_resources.items():
+        cell = resources_sheet.find(resource_type)  # Find the cell with the resource type
+        resources_sheet.update_cell(cell.row, cell.col + 1, str(value))  # Update the next column
 
 def handle_zone_action(grid):
     """Handle the action of placing a zone."""
