@@ -72,13 +72,19 @@ def print_grid(grid):
 
     print()  # Ensure there's a new line after the grid for better spacing
 
-def place_zone(grid, zone_type, x, y):
-    """Place a zone on the grid at the specified coordinates."""
-    if grid[x][y] == '-':
-        grid[x][y] = zone_type
-        print(f"Zone placed at {x}, {y}.")
+def place_zone(grid, zone_type, x, y, player resources):
+    """Place a zone on the grid at the specified coordinates if enough resources available."""
+    zone_costs = {'Residential': 1250, 'Commercial': 450, 'Industrial': 450, 'School': 100, 'Hospital': 100}  # Costs of resources
+    if player_resources['Money'] >= zone_costs[zone_type]:
+        if grid[x][y] == '-':
+            grid[x][y] = zone_type
+            player_resources['Money'] -= zone_costs[zone_type]  # Deduct the cost of zone from resources
+            print(f"Congratulations, you built a {zone_type} and placed in the city at {x}, {y}.")
+            print(f"Remaining Money: {player_resources['Money']}")
+        else:
+            print("This plot is already occupied.")
     else:
-        print("This plot is already occupied.")
+        print("Sorry, you do not enough money to build this zone right now.")
 
 def get_resources():
     """Source and display resources from the 'resources' worksheet."""
