@@ -139,31 +139,34 @@ def update_resources_in_sheet(player_resources):
 
 def handle_zone_action(grid, player_resources):
     """Handle the action of placing a zon and check resources."""
-    try:
-        x = int(input(f"Enter X coordinate for building a zone (0-{GRID_SIZE-1}): "))
-        y = int(input(f"Enter Y coordinate for building a zone (0-{GRID_SIZE-1}): "))
-        zone_input = input("Enter zone type - R (Residential), C (Commercial), I (Industrial), S (School), H (Hospital): ").upper()
+    while True:
+        try:
+            x = int(input(f"Enter X coordinate for building a zone (0-{GRID_SIZE-1}): "))
+            y = int(input(f"Enter Y coordinate for building a zone (0-{GRID_SIZE-1}): "))
 
-        # Map input to full names for internal logic
-        zone_map = {
-            'R': 'Residential',
-            'C': 'Commercial',
-            'I': 'Industrial',
-            'S': 'School',
-            'H': 'Hospital'
-        }
-
-        if zone_input in zone_map:
-            zone_type = zone_map[zone_input]
             if 0 <= x < GRID_SIZE and 0 <= y < GRID_SIZE:
-                place_zone(grid, zone_type, x, y, player_resources)
+                zone_input = input("Enter zone type - R (Residential), C (Commercial), I (Industrial), S (School), H (Hospital): ").upper()
+
+                # Map input to full names for internal logic
+                zone_map = {
+                    'R': 'Residential',
+                    'C': 'Commercial',
+                    'I': 'Industrial',
+                    'S': 'School',
+                    'H': 'Hospital'
+                }
+
+                if zone_input in zone_map:
+                    zone_type = zone_map[zone_input]
+                    place_zone(grid, zone_type, x, y, player_resources)
+                    print_grid(grid)
+                    break
+                else:
+                    print("Invalid zone type. Please use 'R', 'C', 'I', 'S', or 'H'.")
             else:
                 print(f"Invalid coordinates. Please enter values between 0 and {GRID_SIZE - 1}.")
-        else:
-            print("Invalid zone type. Please use 'R', 'C', 'I', 'S', or 'H'.")
-    except ValueError:
-        print("Invalid input. Please enter numeric grid coordinates.")
-    print_grid(grid)
+        except ValueError:
+            print("Invalid input. Please enter numeric grid coordinates.")
 
 def fetch_events():
     """Fetch event data from the Google Sheet."""
@@ -210,7 +213,7 @@ def main():
         clear_screen()
         print("Initial Game Grid:")
         print_grid(grid)
-        
+
         print("\nGood Morning! A New day has started...")
         apply_random_event(events, player_resources)
 
