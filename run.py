@@ -77,7 +77,7 @@ def place_zone(grid, zone_type, x, y, player_resources):
     zone_costs = {'Residential': 1250, 'Commercial': 450, 'Industrial': 450, 'School': 100, 'Hospital': 100}  # Costs of resources
     if player_resources['Money'] >= zone_costs[zone_type]:
         if grid[x][y] == '-':
-            grid[x][y] = zone_type
+            grid[x][y] = ZONE_SYMBOLS[zone_type] 
             player_resources['Money'] -= zone_costs[zone_type]  # Deduct the cost of zone from resources
             print(f"Congratulations, you built a {zone_type} and placed in the city at {x}, {y}.")
             print(f"Remaining Money: {player_resources['Money']}")
