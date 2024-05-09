@@ -129,14 +129,14 @@ def update_resources_in_sheet(player_resources):
         resources_sheet.update_cell(cell.row, cell.col + 1, str(value))  # Update the next column
 
 def handle_zone_action(grid):
-    """Handle the action of placing a zone."""
+    """Handle the action of placing a zon and check resources."""
     try:
         x = int(input(f"Enter X coordinate for building a zone (0-{GRID_SIZE-1}): "))
         y = int(input(f"Enter Y coordinate for building a zone (0-{GRID_SIZE-1}): "))
         if 0 <= x < GRID_SIZE and 0 <= y < GRID_SIZE:
             zone_type = input("Enter zone type - R (Residential), C (Commercial), I (Industrial), S (School), H (Hospital): ").upper()
             if zone_type in ['R', 'C', 'I', 'S', 'H']:
-                place_zone(grid, zone_type, x, y)
+                place_zone(grid, zone_type, x, y, player_resources)
             else:
                 print("Invalid zone type. Please use 'R', 'C', 'I', 'S', or 'H'.")
         else:
