@@ -93,6 +93,20 @@ def get_resources():
     except Exception as e:
         print(f"Error while accessing resources: {e}")
 
+def fetch_player_resources():
+    """Fetch player resources from the 'resources' worksheet and return as a dictionary."""
+    try:
+        resources_sheet = SHEET.worksheet('resources')
+        data = resources_sheet.get_all_records()  # Convert list to dictionaries
+        player_resources = {res['Resource Type']: int(res['Current Value'].replace(',', '')) for res in data}  # Data as integers and remove commas
+        return player_resources
+    except gspread.exceptions.WorksheetNotFound:
+        print("Error: 'resources' worksheet not found.")
+        return {}
+    except Exception as e:
+        print(f"Error while accessing resources: {e}")
+        return {}
+
 def handle_zone_action(grid):
     """Handle the action of placing a zone."""
     try:
