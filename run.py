@@ -1,6 +1,8 @@
 import gspread
 from google.oauth2.service_account import Credentials
 import random #imports the random module
+import os
+import platform
 
 #Constants
 
@@ -25,6 +27,14 @@ CREDS = Credentials.from_service_account_file('creds.json')
 SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('McGee_Metropolis')
+
+def clear_screen():
+    """Clear the console screen."""
+    system_name = platform.system()
+    if system_name == "Windows":
+        os.system("cls")
+    else:
+        os.system("clear")
 
 def fetch_zone_counts():
     """Fetch the counts of each zone type from Google Sheets."""
@@ -196,11 +206,11 @@ def main():
     else:
         # If fetching fails, fallback to an empty grid
         grid = initialize_grid(GRID_SIZE)
-    print("Initial Game Grid:")
-    print_grid(grid)
-
-    #Game loop for handling game actions
     while True:
+        clear_screen()
+        print("Initial Game Grid:")
+        print_grid(grid)
+        
         print("\nGood Morning! A New day has started...")
         apply_random_event(events, player_resources)
 
