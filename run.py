@@ -86,6 +86,13 @@ def place_zone(grid, zone_type, x, y, player resources):
     else:
         print("Sorry, you do not enough money to build this zone right now.")
 
+def update_resources_in_sheet(player_resources):
+    """Update the resources back to Google Sheets."""
+    resources_sheet = SHEET.worksheet('resources')
+    for resource_type, value in player_resources.items():
+        cell = resources_sheet.find(resource_type)  # Find the cell with the resource type
+        resources_sheet.update_cell(cell.row, cell.col + 1, str(value))  # Update the next column
+
 def get_resources():
     """Source and display resources from the 'resources' worksheet."""
     try:
