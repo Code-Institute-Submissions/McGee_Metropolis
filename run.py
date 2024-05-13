@@ -172,33 +172,37 @@ def fetch_events():
     """Fetch event data from the Google Sheet."""
     events_sheet = SHEET.worksheet('events')
     events = events_sheet.get_all_records()
+    # Initialise all events as inactive with specified duration
+    for event in events:
+        event['Active'] = False
+        event['Duration'] = int(event.get('Duration', 0))
     return events
 
 def apply_random_event(events, player_resources, day):
     """Randomly select and apply an event effect if it's not currently active, and handle event duration."""
-    active_events = [event for event in events if event['Active'].lower() == 'yes']
+    active_events = [event for event in events if event['Active']]
     for event in active_events:
         if event['Duration'] > 0:
             print(f"Oh no, an event is impacting the city: {event['Description']} affecting {event['Impacted Zones']} with {event['Impact Type']} of {event['Impact Value']}. Days left: {event['Duration']}")
             apply_impact(player_resources, event['Impact Type'], event['Impact Value'], event['Impacted Zones'])
             event['Duration'] -= 1
         if event['Duration'] <= 0:
-            event['Active'] = 'no' # Deactive event once duration is complete
+            event['Active'] = False # Deactive event once duration is complete
 
     # Start a new event if there are no active events
-    if not any(event['Active'].lower() == 'yes' for event in events):
-        event = random.choice(events)
-        if event['Active'].lower() == 'no':
-            event['Active'] = 'yes'
-            event['Duration'] = int(event.get('Duration', 0))  # Set duration
-            print(f"New event: {event['Description']} affecting {event['Impacted Zones']} with {event['Impact Type']} of {event['Impact Value']}. Duration: {event['Duration']} days.")
-            apply_impact(player_resources, event['Impact Type'], event['Impact Value'], event['Impacted Zones'])
+    if not any(event['Active'] for event in events):
+        new_event = random.choice(events)
+        new_event['Active'] = True
+        new_ event['Duration'] = int(event.get('Duration', 0))  # Set duration
+        print(f"Oh no a new event has started: {event['Description']} affecting {event['Impacted Zones']} with {event['Impact Type']} of {event['Impact Value']}. Duration: {event['Duration']} days.")
+        apply_impact(player_resources, new_event['Impact Type'], new_event['Impact Value'], new_event['Impacted Zones'])
 
 def apply_impact(player_resources, impact_type, impact_value, impacted_zones):
     """Apply the calculated impact to the player's resources based on the impacted zone."""
     if impacted_zones.lower() == 'all':
         for key in player_resources:
-            update_resource(player_resources, key, impact_value)
+            if key == impact_type:
+                update_resource(player_resources, key, impact_value)
     else:
         update_resource(player_resources, impact_type, impact_value)
 
