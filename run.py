@@ -174,24 +174,41 @@ def fetch_events():
     events = events_sheet.get_all_records()
     return events
 
-def apply_random_event(events, player_resources):
-    """Randomly select and apply an event effect."""
-    if not events:
-        return
-    event = random.choice(events)
-    if event['Active'].lower() == 'no':
-        print(f"Oh no, a major issue is impacting the city today: {event['Description']}")
-        # Apply the event's impact here based on its type, modify player_resources accordingly
-        impact_type = event['Impact Type']
-        impact_value = event['Impact Value']
-        if impact_type in player_resources:
-            if isinstance(impact_value, str) and '%' in impact_value:
-                impact_value = float(impact_value.strip('%')) / 100
-                player_resources[impact_type] *= (1 + impact_value)
-            else:
-                player_resources[impact_type] += impact_value
-        # Set the event as active for its duration
-        event['Active'] = 'Yes'
+def apply_random_event(events, player_resources, day):
+    """Randomly select and apply an event effect if it's not currently active, and handle event duration."""
+    active_events = [event for event in events if event['Active'].lower() == 'yes']
+    for event in active_events:
+        if event['Duration'] > 0:
+            print(f"Oh no, an event is impacting the city: {event['Description']} affecting {event['Impacted Zones']} with {event['Impact Type']} of {event['Impact Value']}. Days left: {event['Duration']}")
+            apply_impact(player_resources, event['Impact Type'], event['Impact Value'], event['Impacted Zones'])
+            event['Duration'] -= 1
+        if event['Duration'] <= 0:
+            event['Active'] = 'no' # Deactive event once duration is complete
+
+    # Start a new event if there are no active events
+    if not any(event['Active'].lower() == 'yes' for event in events):
+        event = random.choice(events)
+        if event['Active'].lower() == 'no':
+            event['Active'] = 'yes'
+            event['Duration'] = int(event.get('Duration', 0))  # Set duration
+            print(f"New event: {event['Description']} affecting {event['Impacted Zones']} with {event['Impact Type']} of {event['Impact Value']}. Duration: {event['Duration']} days.")
+            apply_impact(player_resources, event['Impact Type'], event['Impact Value'], event['Impacted Zones'])
+
+def apply_impact(player_resources, impact_type, impact_value, impacted_zones):
+    """Apply the calculated impact to the player's resources based on the impacted zone."""
+    if impacted_zones.lower() == 'all':
+        for key in player_resources:
+            update_resource(player_resources, key, impact_value)
+    else:
+        update_resource(player_resources, impact_type, impact_value)
+
+def update_resource(player_resources, resource_type, impact_value):
+    """Update a specific resource based on an impact value."""
+    if '%' in impact_value:
+        modifier = float(impact_value.strip('%')) / 100
+        player_resources[resource_type] *= (1 + modifier)
+    else:
+        player_resources[resource_type] += float(impact_value)
 
 def confirm_exit():
     """Confirm before exiting the game."""
@@ -218,7 +235,7 @@ def main():
             print_grid(grid)
 
             print(f"Day {current_day}: Good Morning! A New day has started...")
-            apply_random_event(events, player_resources)
+            apply_random_event(events, player_resources, current_day)
 
             action = input("\nChoose the action you would like to take, build a zone, check resources or exit the game: (zone/resources/exit): ").lower()
             if action == 'zone':
