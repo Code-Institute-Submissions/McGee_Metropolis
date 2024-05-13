@@ -199,47 +199,61 @@ def confirm_exit():
     return confirm == 'yes'
 
 def main():
-    zone_counts = fetch_zone_counts()
-    events = fetch_events()
-    player_resources = fetch_player_resources()
-    current_day = 1  # Start the day counter
-
-    if zone_counts:
-        # If counts are successfully fetched, initialise the grid with these counts
-        grid = initialize_random_grid(GRID_SIZE, zone_counts)
-    else:
-        # If fetching fails, fallback to an empty grid
-        grid = initialize_grid(GRID_SIZE)
     while True:
-        clear_screen()
-        print("McGee Metropolis City Map:")
-        print_grid(grid)
+        zone_counts = fetch_zone_counts()
+        events = fetch_events()
+        player_resources = fetch_player_resources()
+        current_day = 1  # Start the day counter
 
-        print(f"Day {current_day}: Good Morning! A New day has started...")
-        apply_random_event(events, player_resources)
-
-        action = input("\nChoose the action you would like to take, build a zone, check resources or exit the game: (zone/resources/exit): ").lower()
-        if action == 'zone':
-            handle_zone_action(grid, player_resources)
-        elif action == 'resources':
-            print("Current Resources:")
-            for key, value in player_resources.items():
-                print(f"{key}: {value}")
-        elif action == 'exit':
-            if confirm_exit():
-                print("Exiting the game.")
-                break
-        elif action == 'help':
-            print("Commands available:")
-            print("  zone - Place a new zone.")
-            print("  resources - Display current resources.")
-            print("  exit - Exit the game.")
-            print("  help - Show this help message.")
+        if zone_counts:
+            # If counts are successfully fetched, initialise the grid with these counts
+            grid = initialize_random_grid(GRID_SIZE, zone_counts)
         else:
-            print("Invalid action. Please choose 'zone', 'resources', or 'exit'.")
+            # If fetching fails, fallback to an empty grid
+            grid = initialize_grid(GRID_SIZE)
+        while current_day <=30:
+            clear_screen()
+            print("McGee Metropolis City Map:")
+            print_grid(grid)
 
-        update_resources_in_sheet(player_resources)
-        current_day += 1  # Increment the day counter
+            print(f"Day {current_day}: Good Morning! A New day has started...")
+            apply_random_event(events, player_resources)
+
+            action = input("\nChoose the action you would like to take, build a zone, check resources or exit the game: (zone/resources/exit): ").lower()
+            if action == 'zone':
+                handle_zone_action(grid, player_resources)
+            elif action == 'resources':
+                print("Current Resources:")
+                for key, value in player_resources.items():
+                    print(f"{key}: {value}")
+            elif action == 'exit':
+                if confirm_exit():
+                    print("Exiting the game.")
+                    return
+            elif action == 'help':
+                print("Commands available:")
+                print("  zone - Place a new zone.")
+                print("  resources - Display current resources.")
+                print("  exit - Exit the game.")
+                print("  help - Show this help message.")
+            else:
+                print("Invalid action. Please choose 'zone', 'resources', or 'exit'.")
+
+            update_resources_in_sheet(player_resources)
+            current_day += 1  # Increment the day counter
+
+            if current_day > 30:
+                print("Unfortunately, you have reached the end of 30 days and haven't reached the goal. The game is over, better luck next time!")
+                restart = input("Would you like to start again at day 1? (yes/no): ").lower()
+                if restart == 'yes':
+                    current_day = 1  # Reset the day counter
+                    zone_counts = fetch_zone_counts()
+                    player_resources = fetch_player_resources()
+                    grid = initialize_grid(GRID_SIZE)
+                else:
+                    print("Exiting the game.")
+                    return  # Exit the entire game loop
+
 
 if __name__ == "__main__":
     main()
