@@ -198,6 +198,7 @@ def confirm_exit():
     confirm = input("Are you sure you want to exit the game? (yes/no): ").lower()
     return confirm == 'yes'
 
+
 def main():
     while True:
         zone_counts = fetch_zone_counts()
@@ -242,17 +243,12 @@ def main():
             update_resources_in_sheet(player_resources)
             current_day += 1  # Increment the day counter
 
-            if current_day > 30:
-                print("Unfortunately, you have reached the end of 30 days and haven't reached the goal. The game is over, better luck next time!")
-                restart = input("Would you like to start again at day 1? (yes/no): ").lower()
-                if restart == 'yes':
-                    current_day = 1  # Reset the day counter
-                    zone_counts = fetch_zone_counts()
-                    player_resources = fetch_player_resources()
-                    grid = initialize_grid(GRID_SIZE)
-                else:
-                    print("Exiting the game.")
-                    return  # Exit the entire game loop
+            
+        print("Unfortunately, you have reached the end of 30 days and haven't reached the goal. The game is over, better luck next time!")
+        restart = input("Would you like to start again at day 1? (yes/no): ").lower()
+        if restart != 'yes':
+            print("Exiting the game.")
+            break  # Exit the entire game loop
 
 
 if __name__ == "__main__":
