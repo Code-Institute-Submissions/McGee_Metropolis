@@ -202,6 +202,7 @@ def main():
     zone_counts = fetch_zone_counts()
     events = fetch_events()
     player_resources = fetch_player_resources()
+    current_day = 1  # Start the day counter
 
     if zone_counts:
         # If counts are successfully fetched, initialise the grid with these counts
@@ -214,7 +215,7 @@ def main():
         print("McGee Metropolis City Map:")
         print_grid(grid)
 
-        print("\nGood Morning! A New day has started...")
+        print(f"Day {current_day}: Good Morning! A New day has started...")
         apply_random_event(events, player_resources)
 
         action = input("\nChoose the action you would like to take, build a zone, check resources or exit the game: (zone/resources/exit): ").lower()
@@ -238,6 +239,7 @@ def main():
             print("Invalid action. Please choose 'zone', 'resources', or 'exit'.")
 
         update_resources_in_sheet(player_resources)
+        current_day += 1  # Increment the day counter
 
 if __name__ == "__main__":
     main()
