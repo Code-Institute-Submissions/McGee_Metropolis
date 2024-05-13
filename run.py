@@ -211,7 +211,7 @@ def main():
         grid = initialize_grid(GRID_SIZE)
     while True:
         clear_screen()
-        print("Initial Game Grid:")
+        print("McGee Metropolis City Map:")
         print_grid(grid)
 
         print("\nGood Morning! A New day has started...")
