@@ -194,12 +194,12 @@ def apply_random_event(events, player_resources, day):
         new_event = random.choice(events)
         if not new_event['Active']:
             new_event['Active'] = True
-            new_event['Duration'] = int(new_event.get('Duration', 0))  # Set duration
-            print(f"Oh no a new event has started:  {new_event['Description']} affecting {new_event['Impacted Zones']} with {new_event['Impact Type']} of {new_event['Impact Value']}. Duration: {new_event['Duration']} days.")
-            apply_impact(player_resources, new_event['Impact Type'], new_event['Impact Value'], new_event['Impacted Zones'])
+            new_event['Duration'] = int(new_event.get('Duration', 1))  # Ensure there is a default duration
+            print(f"Oh no, a new event started: {new_event['Description']} affects {new_event['Impacted Zones']} reducing {new_event['Impact Type']} by {new_event['Impact Value']} for {new_event['Duration']} days.")
             apply_impact(player_resources, new_event['Impact Type'], new_event['Impact Value'], new_event['Impacted Zones'])
 
 def apply_impact(player_resources, impact_type, impact_value, impacted_zones):
+    """Apply the calculated impact to the player's resources based on the impacted zone."""
     # Mapping from event impact types to player resource keys
     impact_type_map = {
         'electricity supply reduction': 'Electricity',
@@ -208,12 +208,10 @@ def apply_impact(player_resources, impact_type, impact_value, impacted_zones):
     }
     """Apply the calculated impact to the player's resources based on the impacted zone."""
     if impacted_zones.lower() == 'all':
-        for key in player_resources:
+        for key in player_resources.keys():
             if key in impact_type_map.values():  
-                adjusted_impact_type = impact_type_map.get(impact_type, impact_type)
-                update_resource(player_resources, adjusted_impact_type, impact_value)
+                update_resource(player_resources, key, impact_value)
     else:
-        adjusted_impact_type = impact_type_map.get(impact_type, impact_type)
         update_resource(player_resources, adjusted_impact_type, impact_value)
 
 def update_resource(player_resources, resource_type, impact_value):
@@ -222,7 +220,7 @@ def update_resource(player_resources, resource_type, impact_value):
         modifier = float(impact_value.strip('%')) / 100
         player_resources[resource_type] *= (1 + modifier)
     else:
-        player_resources[resource_type] += float(impact_value)
+        player_resources[resource_type] -= float(impact_value)
 
 def confirm_exit():
     """Confirm before exiting the game."""
