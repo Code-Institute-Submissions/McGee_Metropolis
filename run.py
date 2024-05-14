@@ -8,12 +8,12 @@ import platform
 
 GRID_SIZE = 10
 ZONE_SYMBOLS = {
-    'Residential': '🟢',  # Residential
-    'Commercial': '🟣',  # Commercial
-    'Industrial': '🟤',  # Industrial
-    'School': '🟡',  # School
-    'Hospital': '🔴',  # Hospital
-    '-': '⚪'    # Empty space
+'Residential': '🟢', # Residential
+'Commercial': '🟣', # Commercial
+'Industrial': '🟤', # Industrial
+'School': '🟡', # School
+'Hospital': '🔴', # Hospital
+'-': '⚪' # Empty space
 }
 
 #Google Sheets setup
@@ -66,6 +66,20 @@ def initialize_random_grid(size, zone_counts):
 
     return grid
 
+def place_zone(grid, zone_type, x, y, player_resources):
+    """Place a zone on the grid at the specified coordinates if enough resources available."""
+    zone_costs = {'Residential': 1250, 'Commercial': 450, 'Industrial': 450, 'School': 100, 'Hospital': 100}  # Costs of resources
+    if player_resources['Money'] >= zone_costs[zone_type]:
+        if grid[x][y] == '-':
+            grid[x][y] = zone_type
+            player_resources['Money'] -= zone_costs[zone_type]  # Deduct the cost of zone from resources
+            print(f"Congratulations, you built a {zone_type} and placed in the city at {x}, {y}.")
+            print(f"Remaining Money: {player_resources['Money']}")
+        else:
+            print("This plot is already occupied")
+    else:
+        print("Sorry, you do not enough money to build this zone right now.")
+
 def print_grid(grid):
     """Print the grid to the console with boxed borders and consistent alignment."""
     cell_width = 4
@@ -80,20 +94,6 @@ def print_grid(grid):
         print(row_str)
 
     print()  # Ensure there's a new line after the grid for better spacing
-
-def place_zone(grid, zone_type, x, y, player_resources):
-    """Place a zone on the grid at the specified coordinates if enough resources available."""
-    zone_costs = {'Residential': 1250, 'Commercial': 450, 'Industrial': 450, 'School': 100, 'Hospital': 100}  # Costs of resources
-    if player_resources['Money'] >= zone_costs[zone_type]:
-        if grid[x][y] == '-':
-            grid[x][y] = ZONE_SYMBOLS[zone_type] 
-            player_resources['Money'] -= zone_costs[zone_type]  # Deduct the cost of zone from resources
-            print(f"Congratulations, you built a {zone_type} and placed in the city at {x}, {y}.")
-            print(f"Remaining Money: {player_resources['Money']}")
-        else:
-            print("This plot is already occupied.")
-    else:
-        print("Sorry, you do not enough money to build this zone right now.")
 
 
 def get_resources():
@@ -159,8 +159,10 @@ def handle_zone_action(grid, player_resources):
                 if zone_input in zone_map:
                     zone_type = zone_map[zone_input]
                     place_zone(grid, zone_type, x, y, player_resources)
-                    print_grid(grid)
-                    break
+                    clear_screen()  
+                    print("Updated game grid after placing the zone:")
+                    print_grid(grid)  # Ensure grid is printed after updating
+                    break  # Exit the loop after placing a zone
                 else:
                     print("Invalid zone type. Please use 'R', 'C', 'I', 'S', or 'H'.")
             else:
@@ -260,6 +262,7 @@ def main():
             action = input("\nChoose the action you would like to take, build a zone, check resources or exit the game: (zone/resources/exit): ").lower()
             if action == 'zone':
                 handle_zone_action(grid, player_resources)
+                print_grid(grid)
             elif action == 'resources':
                 print("Current Resources:")
                 for key, value in player_resources.items():
