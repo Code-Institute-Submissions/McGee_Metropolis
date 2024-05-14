@@ -206,13 +206,21 @@ def apply_impact(player_resources, impact_type, impact_value, impacted_zones):
         'money reduction': 'Money',
         'water supply reduction': 'Water',
     }
+    
+    adjusted_impact_type = impact_type_map.get(impact_type, None)
+    if not adjusted_impact_type:
+        print(f"Unknown impact type: {impact_type}")
+        return
+
     """Apply the calculated impact to the player's resources based on the impacted zone."""
-    if impacted_zones.lower() == 'all':
+    if impacted_zones.lower() == 'all zones':
         for key in player_resources.keys():
-            if key in impact_type_map.values():  
+            if key == adjusted_impact_type:  
                 update_resource(player_resources, key, impact_value)
     else:
         update_resource(player_resources, adjusted_impact_type, impact_value)
+    
+    print(f"{adjusted_impact_type} after impact: {player_resources.get(adjusted_impact_type)}")
 
 def update_resource(player_resources, resource_type, impact_value):
     """Update a specific resource based on an impact value."""
@@ -220,7 +228,7 @@ def update_resource(player_resources, resource_type, impact_value):
         modifier = float(impact_value.strip('%')) / 100
         player_resources[resource_type] *= (1 + modifier)
     else:
-        player_resources[resource_type] -= float(impact_value)
+        player_resources[resource_type] += float(impact_value)
 
 def confirm_exit():
     """Confirm before exiting the game."""
