@@ -137,6 +137,24 @@ def update_resources_in_sheet(player_resources):
         cell = resources_sheet.find(resource_type)  # Find the cell with the resource type
         resources_sheet.update_cell(cell.row, cell.col + 1, str(value))  # Update the next column
 
+def reset_resources_to_default():
+    """Reset the resource values in the Google Sheet to their default amounts."""
+    try:
+        resources_sheet = SHEET.worksheet('resources')
+        default_resources = {
+            'Money': 10000, 
+            'Population': 200,  
+            'Electricity': 500,  
+            'Water': 500 
+        }
+        # Iterate over the default_resources dictionary and update the sheet
+        for resource, value in default_resources.items():
+            cell = resources_sheet.find(resource)  # Find the cell with the resource type
+            resources_sheet.update_cell(cell.row, cell.col + 1, value)  # Update the resource value to default
+        print("Resources have been reset to default values.")
+    except Exception as e:
+        print(f"Failed to reset resources: {e}")
+
 def handle_zone_action(grid, player_resources):
     """Handle the action of placing a zon and check resources."""
     while True:
@@ -160,9 +178,7 @@ def handle_zone_action(grid, player_resources):
                     zone_type = zone_map[zone_input]
                     place_zone(grid, zone_type, x, y, player_resources)
                     clear_screen()  
-                    print("Updated game grid after placing the zone:")
-                    print_grid(grid)  # Ensure grid is printed after updating
-                    break  # Exit the loop after placing a zone
+                    break
                 else:
                     print("Invalid zone type. Please use 'R', 'C', 'I', 'S', or 'H'.")
             else:
