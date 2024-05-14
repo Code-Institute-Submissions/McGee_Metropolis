@@ -286,7 +286,12 @@ def main():
             elif action == 'exit':
                 if confirm_exit():
                     print("Exiting the game.")
+                    reset_resources_to_default()  # Reset resources on exit
                     return
+            elif action == 'reset':
+                reset_resources_to_default()
+                print("Resources have been reset. Updated resource levels:")
+                fetch_player_resources()
             elif action == 'help':
                 print("Commands available:")
                 print("  zone - Place a new zone.")
@@ -303,9 +308,11 @@ def main():
         print("Unfortunately, you have reached the end of 30 days and haven't reached the goal. The game is over, better luck next time!")
         restart = input("Would you like to start again at day 1? (yes/no): ").lower()
         if restart != 'yes':
+            print("Restarting the game.")
+            reset_resources_to_default()  # Reset resources when restarting
+        else:
             print("Exiting the game.")
-            break  # Exit the entire game loop
-
+            break
 
 if __name__ == "__main__":
     main()
