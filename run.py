@@ -192,19 +192,29 @@ def apply_random_event(events, player_resources, day):
     # Start a new event if there are no active events
     if not any(event['Active'] for event in events):
         new_event = random.choice(events)
-        new_event['Active'] = True
-        new_ event['Duration'] = int(event.get('Duration', 0))  # Set duration
-        print(f"Oh no a new event has started: {event['Description']} affecting {event['Impacted Zones']} with {event['Impact Type']} of {event['Impact Value']}. Duration: {event['Duration']} days.")
-        apply_impact(player_resources, new_event['Impact Type'], new_event['Impact Value'], new_event['Impacted Zones'])
+        if not new_event['Active']:
+            new_event['Active'] = True
+            new_event['Duration'] = int(new_event.get('Duration', 0))  # Set duration
+            print(f"Oh no a new event has started:  {new_event['Description']} affecting {new_event['Impacted Zones']} with {new_event['Impact Type']} of {new_event['Impact Value']}. Duration: {new_event['Duration']} days.")
+            apply_impact(player_resources, new_event['Impact Type'], new_event['Impact Value'], new_event['Impacted Zones'])
+            apply_impact(player_resources, new_event['Impact Type'], new_event['Impact Value'], new_event['Impacted Zones'])
 
 def apply_impact(player_resources, impact_type, impact_value, impacted_zones):
+    # Mapping from event impact types to player resource keys
+    impact_type_map = {
+        'electricity supply reduction': 'Electricity',
+        'money reduction': 'Money',
+        'water supply reduction': 'Water',
+    }
     """Apply the calculated impact to the player's resources based on the impacted zone."""
     if impacted_zones.lower() == 'all':
         for key in player_resources:
-            if key == impact_type:
-                update_resource(player_resources, key, impact_value)
+            if key in impact_type_map.values():  
+                adjusted_impact_type = impact_type_map.get(impact_type, impact_type)
+                update_resource(player_resources, adjusted_impact_type, impact_value)
     else:
-        update_resource(player_resources, impact_type, impact_value)
+        adjusted_impact_type = impact_type_map.get(impact_type, impact_type)
+        update_resource(player_resources, adjusted_impact_type, impact_value)
 
 def update_resource(player_resources, resource_type, impact_value):
     """Update a specific resource based on an impact value."""
