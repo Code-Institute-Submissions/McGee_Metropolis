@@ -126,22 +126,21 @@ def fetch_player_resources():
     try:
         resources_sheet = SHEET.worksheet('resources')
         data = resources_sheet.get_all_records()  # Convert list to dictionaries
-        player_resources = {}
         for res in data:
             resource_type = res['Resource Type']
             current_value = res['Current Value']
             regeneration_rate = res.get('Regeneration Rate', 0)
             # Comma removal and conversion of values
             current_value = int(current_value.replace(',', '')) if isinstance(current_value, str) and ',' in current_value else int(current_value)
+            regeneration_rate = float(regeneration_rate) if regeneration_rate.strip() else 0.0  # Convert to float or default to 0.0 if empty
             player_resources[resource_type] = {
                 'current': current_value,
                 'regeneration': float(regeneration_rate)
             }
+        print("Fetched player resources:", player_resources)  # Debug print
     except Exception as e:
         print(f"Error while accessing resources: {e}")
-
-        print("Fetched player resources:", player_resources)  # Debug print
-        return (player_resources)
+    return (player_resources)
 
 def update_resources_in_sheet(player_resources):
     """Update the resources back to Google Sheets."""
@@ -352,6 +351,7 @@ def main():
         zone_counts = fetch_zone_counts()
         events = fetch_events()
         player_resources = fetch_player_resources()
+        print("Debug - After fetching resources:", player_resources)  # Ensure resources are fetched correctly
         metrics = fetch_metrics()
         current_day = 1  # Start the day counter
         
@@ -412,6 +412,9 @@ def main():
         if not confirm_restart():
             print("Exiting the game.")
             break
+        print("Current Resources and Metrics:") #debug
+        print_resources(player_resources) # debug
+        print_metrics(metrics) # debug
 
 if __name__ == "__main__":
     main()
