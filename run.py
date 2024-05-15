@@ -202,7 +202,7 @@ def apply_random_event(events, player_resources, day):
     for event in active_events:
         if event['Duration'] > 0:
             print(f"Oh no, an event is impacting the city: {event['Description']} affecting {event['Impacted Zones']} with {event['Impact Type']} of {event['Impact Value']}. Days left: {event['Duration']}")
-            apply_impact(player_resources, event['Impact Type'], event['Impact Value'], event['Impacted Zones'])
+            apply_impact(player_resources, event['Impact Type'], event['Impact Value'])
             event['Duration'] -= 1
         if event['Duration'] <= 0:
             event['Active'] = False # Deactive event once duration is complete
@@ -213,8 +213,8 @@ def apply_random_event(events, player_resources, day):
         if not new_event['Active']:
             new_event['Active'] = True
             new_event['Duration'] = int(new_event.get('Duration', 1))  # Ensure there is a default duration
-            print(f"Oh no, a new event started: {new_event['Description']} affects {new_event['Impacted Zones']} reducing {new_event['Impact Type']} by {new_event['Impact Value']} for {new_event['Duration']} days.")
-            apply_impact(player_resources, new_event['Impact Type'], new_event['Impact Value'], new_event['Impacted Zones'])
+            print(f"Oh no, a new event has started: {new_event['Description']} reducing {new_event['Impact Type']} by {new_event['Impact Value']} for {new_event['Duration']} days.")
+            apply_impact(player_resources, new_event['Impact Type'], new_event['Impact Value'])
 
 def apply_impact(player_resources, impact_type, impact_value, impacted_zones):
     """Apply the calculated impact to the player's resources based on the impacted zone."""
@@ -225,7 +225,6 @@ def apply_impact(player_resources, impact_type, impact_value, impacted_zones):
         'water supply reduction': 'Water',
     }
     
-    # Debug: Print the incoming impact type and what it maps to
     print(f"This results in a: '{impact_type}'")
     adjusted_impact_type = impact_type_map.get(impact_type, None)
 
@@ -235,15 +234,10 @@ def apply_impact(player_resources, impact_type, impact_value, impacted_zones):
         return  # Exit if no valid mapping exists
 
 
-    """Apply the calculated impact to the player's resources based on the impacted zone."""
-    if impacted_zones.lower() == 'all zones':
-        for key in player_resources.keys():
-            if key == adjusted_impact_type:  
-                update_resource(player_resources, key, impact_value)
-    else:
-        update_resource(player_resources, adjusted_impact_type, impact_value)
-    
+    """Apply the calculated impact to the player's resources."""
+    update_resource(player_resources, adjusted_impact_type, impact_value)
     print(f"{adjusted_impact_type} after impact: {player_resources.get(adjusted_impact_type)}")
+
 
 def update_resource(player_resources, resource_type, impact_value):
     """Update a specific resource based on an impact value."""
