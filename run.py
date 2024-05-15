@@ -134,8 +134,8 @@ def fetch_player_resources():
             current_value = int(current_value.replace(',', '')) if isinstance(current_value, str) and ',' in current_value else int(current_value)
             regeneration_rate = float(regeneration_rate) if regeneration_rate.strip() else 0.0  # Convert to float or default to 0.0 if empty
             player_resources[resource_type] = {
-                'current': current_value,
-                'regeneration': float(regeneration_rate)
+                'Current Value': current_value,
+                'Regeneration Rate': float(regeneration_rate)
             }
         print("Fetched player resources:", player_resources)  # Debug print
     except Exception as e:
@@ -171,8 +171,8 @@ def regenerate_resources(player_resources):
     """Regenerate resources daily"""
     for resource, values in player_resources.items():
         # Apply the regeneration rate directly to the current value
-        values['current'] += values['regeneration']
-        print(f"Updated {resource}: {values['current']}")
+        values['Current Value'] += values['Regeneration Rate']
+        print(f"Updated {resource}: {values['Current Value']}")
 
 def print_resources(resources):
     header = (
