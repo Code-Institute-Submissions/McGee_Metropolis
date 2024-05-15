@@ -248,6 +248,32 @@ def update_resource(player_resources, resource_type, impact_value):
     else:
         player_resources[resource_type] += float(impact_value)
 
+def initialize_metrics():
+    return {
+        'Employment Rate': 70,
+        'Crime Rate': 5,
+        'Happiness Index': 75,
+        'Health': 80
+    }
+
+def check_metrics(metrics):
+    min_values = {
+        'Employment Rate': 50,
+        'Crime Rate': 30,  # Represents a max value
+        'Happiness Index': 50,
+        'Health': 50
+    }
+    for metric, value in metrics.items():
+        if metric == 'Crime Rate':
+            if value > min_values[metric]:
+                print("Game Over: Crime Rate is too high!")
+                return False
+        else:
+            if value < min_values[metric]:
+                print(f"Game Over: {metric} is too low!")
+                return False
+    return True
+
 def confirm_exit():
     """Confirm before exiting the game."""
     confirm = input("Are you sure you want to exit the game? (yes/no): ").lower()
