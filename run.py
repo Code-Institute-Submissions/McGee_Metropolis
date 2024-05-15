@@ -216,16 +216,15 @@ def apply_random_event(events, player_resources, day):
             print(f"Oh no, a new event has started: {new_event['Description']} reducing {new_event['Impact Type']} by {new_event['Impact Value']} for {new_event['Duration']} days.")
             apply_impact(player_resources, new_event['Impact Type'], new_event['Impact Value'])
 
-def apply_impact(player_resources, impact_type, impact_value, impacted_zones):
-    """Apply the calculated impact to the player's resources based on the impacted zone."""
+def apply_impact(player_resources, impact_type, impact_value):
+    """Apply the calculated impact to the player's resources."""
     # Mapping from event impact types to player resource keys
     impact_type_map = {
         'electricity supply reduction': 'Electricity',
         'money reduction': 'Money',
         'water supply reduction': 'Water',
     }
-    
-    print(f"This results in a: '{impact_type}'")
+
     adjusted_impact_type = impact_type_map.get(impact_type, None)
 
     # Check if the mapping was successful
