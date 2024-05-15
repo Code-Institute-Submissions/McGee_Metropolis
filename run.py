@@ -121,6 +121,7 @@ def get_resources():
         print(f"Error while accessing resources: {e}")
 
 def fetch_player_resources():
+    player_resources = {}
     """Fetch player resources from the 'resources' worksheet and return as a dictionary."""
     try:
         resources_sheet = SHEET.worksheet('resources')
@@ -130,17 +131,17 @@ def fetch_player_resources():
             resource_type = res['Resource Type']
             current_value = res['Current Value']
             regeneration_rate = res.get('Regeneration Rate', 0)
-            # Check if the current value is a string and contains commas, replace commas if present
-            if isinstance(current_value, str) and ',' in current_value:
-                current_value = current_value.replace(',', '')
+            # Comma removal and conversion of values
+            current_value = int(current_value.replace(',', '')) if isinstance(current_value, str) and ',' in current_value else int(current_value)
             player_resources[resource_type] = {
-                'current': int(current_value),
+                'current': current_value,
                 'regeneration': float(regeneration_rate)
             }
-        return player_resources
     except Exception as e:
         print(f"Error while accessing resources: {e}")
-        return {}
+
+        print("Fetched player resources:", player_resources)  # Debug print
+        return (player_resources)
 
 def update_resources_in_sheet(player_resources):
     """Update the resources back to Google Sheets."""
@@ -318,8 +319,8 @@ def update_metrics(metrics, zone_type, amount):
     metrics['Health'] = min(max(metrics['Health'], 0), 100)
 
 def print_metrics(metrics):
-     header = (
-        f"{Colour.HEADER}{'Metric Type':<20}{Colour.ENDC}"
+    header = (
+        f"{Colour.HEADER}{'Metric Type':<25}{Colour.ENDC}"
         f"{Colour.HEADER}{'Value (%)':<10}{Colour.ENDC}"
     )
     print(Colour.GREEN + "Metrics:" + Colour.ENDC)
