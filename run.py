@@ -175,10 +175,15 @@ def regenerate_resources(player_resources):
         print(f"Updated {resource}: {values['current']}")
 
 def print_resources(resources):
+    header = (
+        f"{Colour.HEADER}{'Resource Type':<15}{Colour.ENDC}"
+        f"{Colour.HEADER}{'Current Value':<10}{Colour.ENDC}"
+        f"{Colour.HEADER}{'Regeneration Rate':<15}{Colour.ENDC}"
+    )
     print(Colour.BLUE + "Resources:" + Colour.ENDC)
-    print(f"{Colour.HEADER}Type{Colour.ENDC}         {Colour.HEADER}Current{Colour.ENDC}     {Colour.HEADER}Regeneration{Colour.ENDC}")
+    print(header)
     for key, value in resources.items():
-        print(f"{key}: {value}")
+       print(f"{key:<15} {value['Current Value']:10} {value['Regeneration Rate']:15.2f}")
 
 def handle_zone_action(grid, player_resources):
     """Handle the action of placing a zon and check resources."""
@@ -313,10 +318,14 @@ def update_metrics(metrics, zone_type, amount):
     metrics['Health'] = min(max(metrics['Health'], 0), 100)
 
 def print_metrics(metrics):
+     header = (
+        f"{Colour.HEADER}{'Metric Type':<20}{Colour.ENDC}"
+        f"{Colour.HEADER}{'Value (%)':<10}{Colour.ENDC}"
+    )
     print(Colour.GREEN + "Metrics:" + Colour.ENDC)
-    print(f"{Colour.HEADER}Metric{Colour.ENDC}               {Colour.HEADER}Value (%){Colour.ENDC}")
+    print(header)
     for key, value in metrics.items():
-        print(f"{key}: {value}")
+        print(f"{key:<20} {value:10}%")
 
 def print_help():
     print("Commands available:")
