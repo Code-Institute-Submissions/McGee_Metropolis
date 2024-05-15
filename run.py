@@ -324,6 +324,7 @@ def main():
             clear_screen()
             print("McGee Metropolis City Map:")
             print_grid(grid)
+            regenerate_resources(player_resources)
             print(f"Day {current_day}: Good Morning! A New day has started...")
             apply_random_event(events, player_resources, current_day)
             if not check_metrics(metrics):
