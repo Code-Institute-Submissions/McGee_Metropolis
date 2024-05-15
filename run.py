@@ -274,6 +274,23 @@ def check_metrics(metrics):
                 return False
     return True
 
+def update_metrics(metrics, zone_type, amount):
+    if zone_type == 'Commercial' or zone_type == 'Industrial':
+        metrics['Employment Rate'] += amount * 0.5
+    elif zone_type == 'Residential':
+        metrics['Employment Rate'] -= amount * 0.3
+        metrics['Crime Rate'] += amount * 0.2
+    elif zone_type == 'School':
+        metrics['Happiness Index'] += amount * 1
+    elif zone_type == 'Hospital':
+        metrics['Health'] += amount * 1.5
+
+    # Ensure metrics don't go out of bounds
+    metrics['Employment Rate'] = min(max(metrics['Employment Rate'], 0), 100)
+    metrics['Crime Rate'] = min(max(metrics['Crime Rate'], 0), 100)
+    metrics['Happiness Index'] = min(max(metrics['Happiness Index'], 0), 100)
+    metrics['Health'] = min(max(metrics['Health'], 0), 100)
+
 def confirm_exit():
     """Confirm before exiting the game."""
     confirm = input("Are you sure you want to exit the game? (yes/no): ").lower()
