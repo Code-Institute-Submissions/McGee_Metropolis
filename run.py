@@ -17,7 +17,7 @@ ZONE_SYMBOLS = {
 }
 
 # ANSI colour Codes for console colour
-class Color:
+class Colour:
     HEADER = '\033[95m'
     BLUE = '\033[94m'
     GREEN = '\033[92m'
@@ -175,7 +175,8 @@ def regenerate_resources(player_resources):
         print(f"Updated {resource}: {values['current']}")
 
 def print_resources(resources):
-    print("Resources:")
+    print(Colour.BLUE + "Resources:" + Colour.ENDC)
+    print(f"{Colour.HEADER}Type{Color.ENDC}         {Colour.HEADER}Current{Colour.ENDC}     {Color.HEADER}Regeneration{Color.ENDC}")
     for key, value in resources.items():
         print(f"{key}: {value}")
 
@@ -312,7 +313,8 @@ def update_metrics(metrics, zone_type, amount):
     metrics['Health'] = min(max(metrics['Health'], 0), 100)
 
 def print_metrics(metrics):
-    print("Metrics:")
+    print(Colour.GREEN + "Metrics:" + Colour.ENDC)
+    print(f"{Colour.HEADER}Metric{Colour.ENDC}               {Colour.HEADER}Value (%){Colour.ENDC}")
     for key, value in metrics.items():
         print(f"{key}: {value}")
 
