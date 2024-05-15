@@ -118,14 +118,15 @@ def fetch_player_resources():
         for res in data:
             resource_type = res['Resource Type']
             current_value = res['Current Value']
+            regeneration_rate = res.get('Regeneration Rate', 0)
             # Check if the current value is a string and contains commas, replace commas if present
             if isinstance(current_value, str) and ',' in current_value:
                 current_value = current_value.replace(',', '')
-            player_resources[resource_type] = int(current_value)
+            player_resources[resource_type] = {
+                'current': int(current_value),
+                'regeneration': float(regeneration_rate)
+            }
         return player_resources
-    except gspread.exceptions.WorksheetNotFound:
-        print("Error: 'resources' worksheet not found.")
-        return {}
     except Exception as e:
         print(f"Error while accessing resources: {e}")
         return {}
@@ -154,6 +155,13 @@ def reset_resources_to_default():
         print("Resources have been reset to default values.")
     except Exception as e:
         print(f"Failed to reset resources: {e}")
+
+def regenerate_resources(player_resources):
+    """Regenerate resources daily"""
+    for resource, values in player_resources.items():
+        # Apply the regeneration rate directly to the current value
+        values['current'] += values['regeneration']
+        print(f"Updated {resource}: {values['current']}")
 
 def handle_zone_action(grid, player_resources):
     """Handle the action of placing a zon and check resources."""
