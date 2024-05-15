@@ -176,7 +176,7 @@ def regenerate_resources(player_resources):
 
 def print_resources(resources):
     print(Colour.BLUE + "Resources:" + Colour.ENDC)
-    print(f"{Colour.HEADER}Type{Color.ENDC}         {Colour.HEADER}Current{Colour.ENDC}     {Color.HEADER}Regeneration{Color.ENDC}")
+    print(f"{Colour.HEADER}Type{Colour.ENDC}         {Colour.HEADER}Current{Colour.ENDC}     {Colour.HEADER}Regeneration{Colour.ENDC}")
     for key, value in resources.items():
         print(f"{key}: {value}")
 
