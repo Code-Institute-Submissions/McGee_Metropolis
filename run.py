@@ -2,6 +2,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 import random #imports the random module
 import os
+import sys
 import platform
 
 #Constants
@@ -132,12 +133,11 @@ def fetch_player_resources():
             regeneration_rate = res.get('Regeneration Rate', 0)
             # Comma removal and conversion of values
             current_value = int(current_value.replace(',', '')) if isinstance(current_value, str) and ',' in current_value else int(current_value)
-            regeneration_rate = float(regeneration_rate) if regeneration_rate.strip() else 0.0  # Convert to float or default to 0.0 if empty
+            regeneration_rate = float(regeneration_rate) if regeneration_rate else 0.0  # Convert to float or default to 0.0 if empty
             player_resources[resource_type] = {
                 'Current Value': current_value,
                 'Regeneration Rate': float(regeneration_rate)
             }
-        print("Fetched player resources:", player_resources)  # Debug print
     except Exception as e:
         print(f"Error while accessing resources: {e}")
     return (player_resources)
@@ -172,16 +172,16 @@ def regenerate_resources(player_resources):
     for resource, values in player_resources.items():
         # Apply the regeneration rate directly to the current value
         values['Current Value'] += values['Regeneration Rate']
-        print(f"Updated {resource}: {values['Current Value']}")
 
 def print_resources(resources):
     header = (
-        f"{Colour.HEADER}{'Resource Type':<27}{Colour.ENDC}"
-        f"{Colour.HEADER}{'Current Value':<27}{Colour.ENDC}"
-        f"{Colour.HEADER}{'Regeneration Rate':<27}{Colour.ENDC}"
+        f"{Colour.HEADER}{'Resource Type':<20}{Colour.ENDC}"
+        f"{Colour.HEADER}{'Current Value':<15}{Colour.ENDC}"
+        f"{Colour.HEADER}{'Regeneration Rate':<15}{Colour.ENDC}"
     )
     print(Colour.BLUE + "Resources:" + Colour.ENDC)
     print(header)
+    print(resources.items())
     for key, value in resources.items():
        print(f"{key:<15} {value['Current Value']:10} {value['Regeneration Rate']:15.2f}")
 
@@ -351,7 +351,6 @@ def main():
         zone_counts = fetch_zone_counts()
         events = fetch_events()
         player_resources = fetch_player_resources()
-        print("Debug - After fetching resources:", player_resources)  # Ensure resources are fetched correctly
         metrics = fetch_metrics()
         current_day = 1  # Start the day counter
         
@@ -412,9 +411,9 @@ def main():
         if not confirm_restart():
             print("Exiting the game.")
             break
-        print("Current Resources and Metrics:") #debug
-        print_resources(player_resources) # debug
-        print_metrics(metrics) # debug
+        print("Current Resources and Metrics:")
+        print_resources(player_resources)
+        print_metrics(metrics)
 
 if __name__ == "__main__":
     main()
