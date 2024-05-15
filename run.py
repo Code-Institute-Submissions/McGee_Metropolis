@@ -214,19 +214,18 @@ def apply_random_event(events, player_resources, day):
     active_events = [event for event in events if event['Active']]
     for event in active_events:
         if event['Duration'] > 0:
-            print(f"Oh no, an event is impacting the city: {event['Description']} affecting {event['Impacted Zones']} with {event['Impact Type']} of {event['Impact Value']}. Days left: {event['Duration']}")
+            print(f"Oh no, an event is impacting the city: {event['Description']} resulting in {event['Impact Type']} of {event['Impact Value']}. Days left: {event['Duration']}")
             apply_impact(player_resources, event['Impact Type'], event['Impact Value'])
             event['Duration'] -= 1
         if event['Duration'] <= 0:
-            event['Active'] = False # Deactive event once duration is complete
+            event['Active'] = False
 
-    # Start a new event if there are no active events
     if not any(event['Active'] for event in events):
         new_event = random.choice(events)
         if not new_event['Active']:
             new_event['Active'] = True
-            new_event['Duration'] = int(new_event.get('Duration', 1))  # Ensure there is a default duration
-            print(f"Oh no, a new event has started: {new_event['Description']} reducing {new_event['Impact Type']} by {new_event['Impact Value']} for {new_event['Duration']} days.")
+            new_event['Duration'] = int(new_event.get('Duration', 1))
+            print(f"Oh no, a new event has started: {new_event['Description']} resulting in {new_event['Impact Type']} by {new_event['Impact Value']} for {new_event['Duration']} days.")
             apply_impact(player_resources, new_event['Impact Type'], new_event['Impact Value'])
 
 def apply_impact(player_resources, impact_type, impact_value):
@@ -242,7 +241,6 @@ def apply_impact(player_resources, impact_type, impact_value):
 
     # Check if the mapping was successful
     if not adjusted_impact_type:
-        print(f"Unknown impact type: {impact_type}")
         return  # Exit if no valid mapping exists
 
 
