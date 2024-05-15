@@ -332,7 +332,7 @@ def main():
                 game_over = True
                 continue
 
-            action = input("\nChoose the action you would like to take, build a zone, check resources or exit the game: (zone/resources/exit): ").lower()
+            action = input("\nChoose the action you would like to take, build a zone, check resources, access help or exit the game: (zone/resources/help/exit): ").lower()
             if action == 'zone':
                 handle_zone_action(grid, player_resources)
                 print_grid(grid)
@@ -351,14 +351,15 @@ def main():
                 fetch_player_resources()
                 print("Resources and metrics have been reset.")
             elif action == 'help':
-                print("Commands available:")
-                print("  zone - Place a new zone.")
-                print("  resources - Display current resources.")
-                print("  metrics - Display current resources.")
-                print("  exit - Exit the game.")
-                print("  help - Show this help message.")
+               print("Commands available:")
+               print("\033[1;32mzone\033[0m - Place a new zone on the grid at specified coordinates.")
+               print("\033[1;32mresources\033[0m - Display current levels of all resources.")
+               print("\033[1;32mmetrics\033[0m - Show current values of all gameplay metrics.")
+               print("\033[1;32mexit\033[0m - Exit the game.")
+               print("\033[1;32mhelp\033[0m - Show this help message again.")
+               input("Press enter to return to the game...")
             else:
-                print("Invalid action. Please choose 'zone', 'resources', or 'exit'.")
+                print("Invalid action. Please choose 'zone', 'resources', 'exit', or 'help'.")
 
             update_resources_in_sheet(player_resources)
             current_day += 1  # Increment the day counter
