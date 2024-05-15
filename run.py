@@ -163,6 +163,11 @@ def regenerate_resources(player_resources):
         values['current'] += values['regeneration']
         print(f"Updated {resource}: {values['current']}")
 
+def print_resources(resources):
+    print("Resources:")
+    for key, value in resources.items():
+        print(f"{key}: {value}")
+
 def handle_zone_action(grid, player_resources):
     """Handle the action of placing a zon and check resources."""
     while True:
@@ -297,6 +302,22 @@ def update_metrics(metrics, zone_type, amount):
     metrics['Happiness Index'] = min(max(metrics['Happiness Index'], 0), 100)
     metrics['Health'] = min(max(metrics['Health'], 0), 100)
 
+def print_metrics(metrics):
+    print("Metrics:")
+    for key, value in metrics.items():
+        print(f"{key}: {value}")
+
+def print_help():
+    print("Commands available:")
+    print("  build - Place a new zone.")
+    print("  next - Move to the next day.")
+    print("  restart - Restart the game.")
+    print("  help - Show this help message.")
+
+def confirm_restart():
+    response = input("Are you sure you want to restart the game? (yes/no): ")
+    return response.lower() == 'yes'
+
 def confirm_exit():
     """Confirm before exiting the game."""
     confirm = input("Are you sure you want to exit the game? (yes/no): ").lower()
@@ -310,9 +331,9 @@ def main():
         zone_counts = fetch_zone_counts()
         events = fetch_events()
         player_resources = fetch_player_resources()
-        current_day = 1  # Start the day counter
         metrics = fetch_metrics()
-
+        current_day = 1  # Start the day counter
+        
         if zone_counts:
             # If counts are successfully fetched, initialise the grid with these counts
             grid = initialize_random_grid(GRID_SIZE, zone_counts)
@@ -324,6 +345,10 @@ def main():
             clear_screen()
             print("McGee Metropolis City Map:")
             print_grid(grid)
+            print("\nCurrent Resources and Metrics:")
+            print_resources(player_resources)  # Function to print resources in a formatted table
+            print_metrics(metrics)  # Function to print metrics in a formatted table
+
             regenerate_resources(player_resources)
             print(f"Day {current_day}: Good Morning! A New day has started...")
             apply_random_event(events, player_resources, current_day)
@@ -336,45 +361,34 @@ def main():
             if action == 'zone':
                 handle_zone_action(grid, player_resources)
                 print_grid(grid)
-            elif action == 'resources':
-                print("Current Resources:")
-                for key, value in player_resources.items():
-                    print(f"{key}: {value}")
+            elif action == 'next':
+                current_day += 1  # Increment the day counter
+            elif action == 'restart':
+                if confirm_restart():  # Confirm restart decision
+                    print("Restarting the game.")
+                    reset_resources_to_default()
+                    metrics = fetch_metrics() 
+                    fetch_player_resources()
+                    print("Resources and metrics have been reset.")
+                    break
+            elif action == 'help':
+               print_help()
             elif action == 'exit':
                 if confirm_exit():
                     print("Exiting the game.")
                     reset_resources_to_default()  # Reset resources on exit
                     return
-            elif action == 'reset':
-                reset_resources_to_default()
-                metrics = fetch_metrics() 
-                fetch_player_resources()
-                print("Resources and metrics have been reset.")
-            elif action == 'help':
-               print("Commands available:")
-               print("\033[1;32mzone\033[0m - Place a new zone on the grid at specified coordinates.")
-               print("\033[1;32mresources\033[0m - Display current levels of all resources.")
-               print("\033[1;32mmetrics\033[0m - Show current values of all gameplay metrics.")
-               print("\033[1;32mexit\033[0m - Exit the game.")
-               print("\033[1;32mhelp\033[0m - Show this help message again.")
-               input("Press enter to return to the game...")
             else:
-                print("Invalid action. Please choose 'zone', 'resources', 'exit', or 'help'.")
+                print("Invalid action. Please choose 'zone', 'next', 'restart', 'help', or 'exit'.")
 
             update_resources_in_sheet(player_resources)
-            current_day += 1  # Increment the day counter
-
             
-        if not game_over:
+        if not game_over and current_day > 30:
             if player_resources['Money'] >= monetary_goal and all(metrics[m] >= min_metrics[m] for m in metrics):
                 print("Congratulations! You have reached your goals and won the game.")
             else:
                 print("Unfortunately, you did not meet the goals. Game over.")
-        restart = input("Would you like to start again at day 1? (yes/no): ").lower()
-        if restart == 'yes':
-            print("Restarting the game.")
-            reset_resources_to_default()  # Reset resources when restarting
-        else:
+        if not confirm_restart():
             print("Exiting the game.")
             break
 
