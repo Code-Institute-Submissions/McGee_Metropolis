@@ -248,7 +248,7 @@ def update_resource(player_resources, resource_type, impact_value):
     else:
         player_resources[resource_type] += float(impact_value)
 
-def initialize_metrics():
+def fetch_metrics():
     return {
         'Employment Rate': 70,
         'Crime Rate': 5,
@@ -320,8 +320,7 @@ def main():
             print_grid(grid)
             print(f"Day {current_day}: Good Morning! A New day has started...")
             apply_random_event(events, player_resources, current_day)
-            check_metrics(metrics)
-            if any(metrics[m] < min_metrics[m] for m in metrics):
+            if not check_metrics(metrics):
                 print("One or more metrics have fallen below or above critical levels. The game is over, better luck next time!")
                 game_over = True
                 continue
@@ -341,13 +340,14 @@ def main():
                     return
             elif action == 'reset':
                 reset_resources_to_default()
-                print("Resources and metrics have been reset.")
-                fetch_player_resources()
                 metrics = fetch_metrics() 
+                fetch_player_resources()
+                print("Resources and metrics have been reset.")
             elif action == 'help':
                 print("Commands available:")
                 print("  zone - Place a new zone.")
                 print("  resources - Display current resources.")
+                print("  metrics - Display current resources.")
                 print("  exit - Exit the game.")
                 print("  help - Show this help message.")
             else:
@@ -363,7 +363,7 @@ def main():
             else:
                 print("Unfortunately, you did not meet the goals. Game over.")
         restart = input("Would you like to start again at day 1? (yes/no): ").lower()
-        if restart != 'yes':
+        if restart == 'yes':
             print("Restarting the game.")
             reset_resources_to_default()  # Reset resources when restarting
         else:
