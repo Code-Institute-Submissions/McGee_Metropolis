@@ -298,11 +298,14 @@ def confirm_exit():
 
 
 def main():
+    monetary_goal = 20000
+    min_metrics = {'Employment Rate': 50, 'Crime Rate': 50, 'Happiness Index': 50, 'Health': 50}  # Minimum / maximum acceptable metric values
     while True:
         zone_counts = fetch_zone_counts()
         events = fetch_events()
         player_resources = fetch_player_resources()
         current_day = 1  # Start the day counter
+        metrics = fetch_metrics()
 
         if zone_counts:
             # If counts are successfully fetched, initialise the grid with these counts
@@ -310,13 +313,18 @@ def main():
         else:
             # If fetching fails, fallback to an empty grid
             grid = initialize_grid(GRID_SIZE)
-        while current_day <=30:
+        game_over = False
+        while current_day <=30 and not game_over:
             clear_screen()
             print("McGee Metropolis City Map:")
             print_grid(grid)
-
             print(f"Day {current_day}: Good Morning! A New day has started...")
             apply_random_event(events, player_resources, current_day)
+            check_metrics(metrics)
+            if any(metrics[m] < min_metrics[m] for m in metrics):
+                print("One or more metrics have fallen below or above critical levels. The game is over, better luck next time!")
+                game_over = True
+                continue
 
             action = input("\nChoose the action you would like to take, build a zone, check resources or exit the game: (zone/resources/exit): ").lower()
             if action == 'zone':
@@ -333,8 +341,9 @@ def main():
                     return
             elif action == 'reset':
                 reset_resources_to_default()
-                print("Resources have been reset. Updated resource levels:")
+                print("Resources and metrics have been reset.")
                 fetch_player_resources()
+                metrics = fetch_metrics() 
             elif action == 'help':
                 print("Commands available:")
                 print("  zone - Place a new zone.")
@@ -348,7 +357,11 @@ def main():
             current_day += 1  # Increment the day counter
 
             
-        print("Unfortunately, you have reached the end of 30 days and haven't reached the goal. The game is over, better luck next time!")
+        if not game_over:
+            if player_resources['Money'] >= monetary_goal and all(metrics[m] >= min_metrics[m] for m in metrics):
+                print("Congratulations! You have reached your goals and won the game.")
+            else:
+                print("Unfortunately, you did not meet the goals. Game over.")
         restart = input("Would you like to start again at day 1? (yes/no): ").lower()
         if restart != 'yes':
             print("Restarting the game.")
