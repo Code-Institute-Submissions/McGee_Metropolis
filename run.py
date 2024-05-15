@@ -177,9 +177,9 @@ def regenerate_resources(player_resources):
 
 def print_resources(resources):
     header = (
-        f"{Colour.HEADER}{'Resource Type':<15}{Colour.ENDC}"
-        f"{Colour.HEADER}{'Current Value':<10}{Colour.ENDC}"
-        f"{Colour.HEADER}{'Regeneration Rate':<15}{Colour.ENDC}"
+        f"{Colour.HEADER}{'Resource Type':<27}{Colour.ENDC}"
+        f"{Colour.HEADER}{'Current Value':<27}{Colour.ENDC}"
+        f"{Colour.HEADER}{'Regeneration Rate':<27}{Colour.ENDC}"
     )
     print(Colour.BLUE + "Resources:" + Colour.ENDC)
     print(header)
@@ -320,8 +320,8 @@ def update_metrics(metrics, zone_type, amount):
 
 def print_metrics(metrics):
     header = (
-        f"{Colour.HEADER}{'Metric Type':<25}{Colour.ENDC}"
-        f"{Colour.HEADER}{'Value (%)':<10}{Colour.ENDC}"
+        f"{Colour.HEADER}{'Metric Type':<27}{Colour.ENDC}"
+        f"{Colour.HEADER}{'Value (%)':<27}{Colour.ENDC}"
     )
     print(Colour.GREEN + "Metrics:" + Colour.ENDC)
     print(header)
@@ -378,7 +378,7 @@ def main():
                 game_over = True
                 continue
 
-            action = input("\nChoose the action you would like to take, build a zone, check resources, access help or exit the game: (zone/resources/help/exit): ").lower()
+            action = input("\nChoose the action you would like to take, build a zone, go to the next day, access help or exit the game: (zone/next/help/exit): ").lower()
             if action == 'zone':
                 handle_zone_action(grid, player_resources)
                 print_grid(grid)
@@ -400,7 +400,7 @@ def main():
                     reset_resources_to_default()  # Reset resources on exit
                     return
             else:
-                print("Invalid action. Please choose 'zone', 'resources', 'help', or 'exit'.")
+                print("Invalid action. Please choose 'zone', 'next', 'help', or 'exit'.")
 
             update_resources_in_sheet(player_resources)
             
