@@ -225,10 +225,15 @@ def apply_impact(player_resources, impact_type, impact_value, impacted_zones):
         'water supply reduction': 'Water',
     }
     
+    # Debug: Print the incoming impact type and what it maps to
+    print(f"This results in a: '{impact_type}'")
     adjusted_impact_type = impact_type_map.get(impact_type, None)
+
+    # Check if the mapping was successful
     if not adjusted_impact_type:
         print(f"Unknown impact type: {impact_type}")
-        return
+        return  # Exit if no valid mapping exists
+
 
     """Apply the calculated impact to the player's resources based on the impacted zone."""
     if impacted_zones.lower() == 'all zones':
