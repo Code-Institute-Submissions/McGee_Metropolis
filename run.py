@@ -379,7 +379,7 @@ def main():
                     reset_resources_to_default()  # Reset resources on exit
                     return
             else:
-                print("Invalid action. Please choose 'zone', 'next', 'restart', 'help', or 'exit'.")
+                print("Invalid action. Please choose 'zone', 'resources', 'help', or 'exit'.")
 
             update_resources_in_sheet(player_resources)
             
