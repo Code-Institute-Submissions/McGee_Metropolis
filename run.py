@@ -48,16 +48,23 @@ def clear_screen():
     else:
         os.system("clear")
 
-def fetch_zone_counts():
-    """Fetch the counts of each zone type from Google Sheets."""
+def fetch_zone_data():
+    """Fetch the data of each zone type from Google Sheets."""
     try:
         zone_sheet = SHEET.worksheet('zones')
         data = zone_sheet.get_all_values()
-         # Create a dictionary where the key is the zone type and the value is the count
-        zone_counts = {row[0]: int(row[1]) for row in data[1:]}  # Skip header row
-        return zone_counts
+        zone_data = {}
+        for row in data[1:]:  # Skip header row
+            zone_type = row[0]
+            count = int(row[1])
+            income = float(row[2])
+            zone_data[zone_type] = {
+                'count': count,
+                'income': income
+            }
+        return zone_data
     except Exception as e:
-        print(f"Error fetching zone counts: {e}")
+        print(f"Error fetching zone data: {e}")
         return {}
 
 #Initialise an empty game grid
@@ -65,18 +72,22 @@ def initialize_grid(size):
     """Initialise an empty game grid with the specified size."""
     return [['-' for _ in range(size)] for _ in range(size)]
 
-def initialize_random_grid(size, zone_counts):
+def initialize_random_grid(size, zone_data):
     """Initialise the game grid with random zones based on fetched counts."""
     grid = [['-' for _ in range(size)] for _ in range(size)]
     positions = [(x, y) for x in range(size) for y in range(size)]
     random.shuffle(positions)  # Shuffle positions for random placement
 
-    for zone_type, count in zone_counts.items():
+    total_daily_income = 0
+    for zone_type, data in zone_data.items():
+        count = data['count']
+        income = data['income']
         for _ in range(min(count, len(positions))):
             x, y = positions.pop()
             grid[x][y] = zone_type
+            total_daily_income += income
 
-    return grid
+    return grid, total_daily_income
 
 def place_zone(grid, zone_type, x, y, player_resources):
     """Place a zone on the grid at the specified coordinates if enough resources available."""
@@ -102,7 +113,7 @@ def print_grid(grid):
                                            
     for index, row in enumerate(grid):
         # Print each row with a numerical label
-        row_str = f"{index:2} |" + "|".join(f"{ZONE_SYMBOLS.get(cell, '⚪'):^{cell_width}}" for cell in row) + "|"
+        row_str = f"{index:2} |" + "|".join(f"{ZONE_SYMBOLS.get(str(cell), '⚪'):^{cell_width}}" for cell in row) + "|"
         print(row_str)
 
     print()  # Ensure there's a new line after the grid for better spacing
@@ -167,11 +178,13 @@ def reset_resources_to_default():
     except Exception as e:
         print(f"Failed to reset resources: {e}")
 
-def regenerate_resources(player_resources):
-    """Regenerate resources daily"""
+def regenerate_resources(player_resources, total_daily_income):
+    """Regenerate resources daily and add daily income"""
     for resource, values in player_resources.items():
         # Apply the regeneration rate directly to the current value
         values['Current Value'] += values['Regeneration Rate']
+    # Add daily income to the player's money
+    player_resources['Money']['Current Value'] += total_daily_income
 
 def print_resources(resources):
     header = (
@@ -347,18 +360,17 @@ def main():
     monetary_goal = 20000
     min_metrics = {'Employment Rate': 50, 'Crime Rate': 50, 'Happiness Index': 50, 'Health': 50}  # Minimum / maximum acceptable metric values
     while True:
-        zone_counts = fetch_zone_counts()
+        zone_data = fetch_zone_data()
         events = fetch_events()
         player_resources = fetch_player_resources()
         metrics = fetch_metrics()
         current_day = 1  # Start the day counter
         
-        if zone_counts:
-            # If counts are successfully fetched, initialise the grid with these counts
-            grid = initialize_random_grid(GRID_SIZE, zone_counts)
+        if zone_data:
+            grid, total_daily_income = initialize_random_grid(GRID_SIZE, zone_data)
         else:
             # If fetching fails, fallback to an empty grid
-            grid = initialize_grid(GRID_SIZE)
+            grid, total_daily_income = initialize_grid(GRID_SIZE), 0
         game_over = False
         while current_day <=30 and not game_over:
             clear_screen()
@@ -368,7 +380,7 @@ def main():
             print_resources(player_resources)  # Function to print resources in a formatted table
             print_metrics(metrics)  # Function to print metrics in a formatted table
 
-            regenerate_resources(player_resources)
+            regenerate_resources(player_resources, total_daily_income)
             print(f"Day {current_day}: Good Morning! A New day has started...")
             apply_random_event(events, player_resources, current_day)
             if not check_metrics(metrics):
@@ -387,7 +399,7 @@ def main():
                     print("Restarting the game.")
                     reset_resources_to_default()
                     metrics = fetch_metrics() 
-                    fetch_player_resources()
+                    player_resources = fetch_player_resources()
                     print("Resources and metrics have been reset.")
                     break
             elif action == 'help':
@@ -403,7 +415,7 @@ def main():
             update_resources_in_sheet(player_resources)
             
         if not game_over and current_day > 30:
-            if player_resources['Money'] >= monetary_goal and all(metrics[m] >= min_metrics[m] for m in metrics):
+            if player_resources['Money']['Current Value'] >= monetary_goal and all(metrics[m] >= min_metrics[m] for m in metrics):
                 print("Congratulations! You have reached your goals and won the game.")
             else:
                 print("Unfortunately, you did not meet the goals. Game over.")
