@@ -98,7 +98,7 @@ def print_grid(grid):
     num_columns = len(grid[0])
 
     header_padding = " " * 5 # Add padding for the row letters
-    print("      0     1     2     3     4     5     6     7     8     9")
+    print("      0   1   2   3   4   5   6   7   8   9")
                                            
     for index, row in enumerate(grid):
         # Print each row with a numerical label
