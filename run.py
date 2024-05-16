@@ -357,7 +357,7 @@ def confirm_exit():
 
 
 def main():
-    monetary_goal = 20000
+    monetary_goal = 200000
     min_metrics = {'Employment Rate': 50, 'Crime Rate': 50, 'Happiness Index': 50, 'Health': 50}  # Minimum / maximum acceptable metric values
     while True:
         zone_data = fetch_zone_data()
