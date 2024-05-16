@@ -181,7 +181,6 @@ def print_resources(resources):
     )
     print(Colour.BLUE + "Resources:" + Colour.ENDC)
     print(header)
-    print(resources.items())
     for key, value in resources.items():
        print(f"{key:<15} {value['Current Value']:10} {value['Regeneration Rate']:15.2f}")
 
