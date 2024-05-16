@@ -48,6 +48,79 @@ def clear_screen():
     else:
         os.system("clear")
 
+def show_intro():
+    """Display the game introduction and instructions."""
+    logo = r"""
+    __        __   _                  
+    \ \      / /__| | ___ ___  _ __ ___   ___  
+     \ \ /\ / / _ \ |/ __/ _ \| '_ ` _ \ / _ \ 
+      \ V  V /  __/ | (_| (_) | | | | | |  __/ 
+       \_/\_/ \___|_|\___\___/|_| |_| |_|\___|
+    """
+    welcome_message = "Welcome to McGee Metropolis!\n"
+    guide = """
+    Aim of the Game:
+    You are being challened to build and manage a thriving city by placing different zones, 
+    including residential, commercial, industrial, schools and hospitals, whilst also
+    managing resources such as your money, electricity and water. 
+    Your goal is to achieve a pot of 200000 within 30 days whilst 
+    maintaining key metrics like Employment Rate, Crime Rate, Happiness Index, and Health.
+    If these drop too low, you will lose the game make careful choices!
+
+    Game Instructions:
+    1. You will start with a grid representing your city, this will include some zones to get you started.
+    2. You will also be allocated a pot of money, a small population, water and electricity.
+    3. Each zone affects your city's resources and metrics, just like in real life. 
+       They cost money to build, but they do provide an income.
+    4. Manage your resources wisely to reach the monetary goal and keep your metrics balanced.
+    5. Random events will impact your city each day, so plan ahead and try to adapt.
+    6. Clear tables will update you each day with your current metrics and resources, these refresh at the start of a new game.
+
+     Zone Details:
+    - Residential (🟢): Cost to build: 1250, income generated 50 per day
+    - Commercial (🟣): Cost to build: 450, income generated 100 per day
+    - Industrial (🟤): Cost to build: 450, income generated 75 per day
+    - School (🟡): Cost to build: 100, income generated 20 per day
+    - Hospital (🔴): Cost to build: 100, income generated 30 per day
+
+    Metric Stats:
+    If you hit any of these metrics, you will lose the game:
+    Employment Rate: 50
+    Crime Rate: 30
+    Happiness Index: 50
+    Health: 50
+
+    Controls:
+    - zone: Build a new zone on the grid.
+    - next: Move to the next day.
+    - help: Display the help message.
+    - exit: Exit the game.
+
+    Top Tips:
+    1. Building any zone will increase your daily income.
+    2. If you are building a residential zone, your population will increase but your employment rate will decrease.
+    3. If you build a commercial zone your employment rate will increase, but your happiness index will decrease.
+    4. If you build an industrial zone your happiness index and your citizens health will both decrease.
+    5. Building a hospital will boost your citizens health
+    6. Building a school will increase your employment rate and boost your happiness index.
+    7. Water and electricity regenerate at a rate of 5 per day.
+
+    Are you ready to play?
+    """
+    print(Colour.GREEN + logo + Colour.ENDC)
+    for char in welcome_message:
+        print(Colour.BLUE + char, end='', flush=True)
+        time.sleep(0.05)
+
+    for char in guide:
+        print(Colour.GREEN + char, end='', flush=True)
+        time.sleep(0.02)
+
+    ready = input(Colour.BOLD + "Press 'Y' to start the game or any other key to exit: " + Colour.ENDC)
+    if ready.lower() != 'y':
+        print(Colour.FAIL + "Game exited. See you next time!" + Colour.ENDC)
+        sys.exit()
+
 def fetch_zone_data():
     """Fetch the data of each zone type from Google Sheets."""
     try:
@@ -357,6 +430,7 @@ def confirm_exit():
 
 
 def main():
+    show_intro()  # Show introduction and instructions at the start
     monetary_goal = 200000
     min_metrics = {'Employment Rate': 50, 'Crime Rate': 50, 'Happiness Index': 50, 'Health': 50}  # Minimum / maximum acceptable metric values
     while True:
