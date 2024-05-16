@@ -81,14 +81,14 @@ def initialize_random_grid(size, zone_counts):
 def place_zone(grid, zone_type, x, y, player_resources):
     """Place a zone on the grid at the specified coordinates if enough resources available."""
     zone_costs = {'Residential': 1250, 'Commercial': 450, 'Industrial': 450, 'School': 100, 'Hospital': 100}  # Costs of resources
-    if player_resources['Money'] >= zone_costs[zone_type]:
+    if player_resources['Money']['Current Value'] >= zone_costs[zone_type]:
         if grid[x][y] == '-':
             grid[x][y] = zone_type
-            player_resources['Money'] -= zone_costs[zone_type]  # Deduct the cost of zone from resources
+            player_resources['Money']['Current Value'] -= zone_costs[zone_type]  # Deduct the cost of zone from resources
             print(f"Congratulations, you built a {zone_type} and placed in the city at {x}, {y}.")
             print(f"Remaining Money: {player_resources['Money']}")
         else:
-            print("This plot is already occupied")
+            print("This plot is already occupied, please choose another plot space")
     else:
         print("Sorry, you do not enough money to build this zone right now.")
 
@@ -185,7 +185,8 @@ def print_resources(resources):
        print(f"{key:<15} {value['Current Value']:10} {value['Regeneration Rate']:15.2f}")
 
 def handle_zone_action(grid, player_resources):
-    """Handle the action of placing a zon and check resources."""
+    """Handle the action of placing a zone and check resources."""
+    clear_screen()
     while True:
         try:
             x = int(input(f"Enter X coordinate for building a zone (0-{GRID_SIZE-1}): "))
@@ -205,8 +206,7 @@ def handle_zone_action(grid, player_resources):
 
                 if zone_input in zone_map:
                     zone_type = zone_map[zone_input]
-                    place_zone(grid, zone_type, x, y, player_resources)
-                    clear_screen()  
+                    place_zone(grid, zone_type, x, y, player_resources) 
                     break
                 else:
                     print("Invalid zone type. Please use 'R', 'C', 'I', 'S', or 'H'.")
