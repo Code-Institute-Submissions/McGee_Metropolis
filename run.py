@@ -4,6 +4,7 @@ import random #imports the random module
 import os
 import sys
 import platform
+import time
 
 #Constants
 
