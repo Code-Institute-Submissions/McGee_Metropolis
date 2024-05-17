@@ -161,8 +161,19 @@ def fetch_zone_data():
         zone_data = {}
         for row in data[1:]:  # Skip header row
             zone_type = row[0]
-            count = int(row[1])
-            income = float(row[2])
+            count = row[1].strip()
+            income = row[2].strip()
+            # Validate and convert count and income
+            if count.isdigit():
+                count = int(count)
+            else:
+                print(f"Invalid count for {zone_type}: {count}")
+                count = 0
+            try:
+                income = float(income) if income else 0.0
+            except ValueError:
+                print(f"Invalid income for {zone_type}: {income}")
+                income = 0.0
             zone_data[zone_type] = {
                 'count': count,
                 'income': income
