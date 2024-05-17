@@ -91,11 +91,16 @@ def show_intro():
     instructions = """
     Game Instructions:
     1. You will start with a grid representing your city.
+
     2. You will also be allocated resources.
+
     3. Every decision impacts the city just like in real life. 
+
     4. Manage your resources wisely to reach the monetary goal 
     and keep your metrics balanced.
+
     5. Random events will impact your city each day.
+    
     6. Tables will update you each day with your current metrics and resources.
     """
 
@@ -133,11 +138,21 @@ def show_intro():
     Health: 50
 
     1. Building any zone will increase your daily income.
-    2. If you are building a residential zone, your population will increase but your employment rate will decrease.
-    3. If you build a commercial zone your employment rate will increase, but your happiness index will decrease.
-    4. If you build an industrial zone your happiness index and your citizens health will both decrease.
+
+    2. If you are building a residential zone, 
+    your population will increase but your employment rate will decrease.
+
+    3. If you build a commercial zone your employment rate will increase, 
+    but your happiness index will decrease.
+
+    4. If you build an industrial zone your happiness index 
+    and your citizens health will both decrease.
+
     5. Building a hospital will boost your citizens health
-    6. Building a school will increase your employment rate and boost your happiness index.
+
+    6. Building a school will increase your employment rate 
+    and boost your happiness index.
+
     7. Water and electricity regenerate at a rate of 5 per day.
     """
 
@@ -247,6 +262,7 @@ def place_zone(grid, zone_type, x, y, player_resources):
 def print_grid(grid):
     """
     Print the grid to the console with boxed borders and consistent alignment.
+    Also prints a key to help players understand the symbols used for different zones.
 
     Args:
         grid (list): The game grid.
@@ -263,6 +279,18 @@ def print_grid(grid):
         print(row_str)
 
     print()  # Ensure there's a new line after the grid for better spacing
+    
+    # Print the key
+    key = """
+    Key:
+    🟢 - Residential
+    🟣 - Commercial
+    🟤 - Industrial
+    🟡 - School
+    🔴 - Hospital
+    ⚪ - Empty space
+    """
+    print(Colour.BOLD + key + Colour.ENDC)
 
 
 def get_resources():
@@ -366,6 +394,7 @@ def print_resources(resources):
     print(header)
     for key, value in resources.items():
        print(f"{key:<15} {value['Current Value']:10} {value['Regeneration Rate']:15.2f}")
+    print()
 
 def handle_zone_action(grid, player_resources):
     """
@@ -569,6 +598,7 @@ def print_metrics(metrics):
     print(header)
     for key, value in metrics.items():
         print(f"{key:<20} {value:10}%")
+    print()
 
 def print_help():
     """
