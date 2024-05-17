@@ -100,7 +100,7 @@ def show_intro():
     and keep your metrics balanced.
 
     5. Random events will impact your city each day.
-    
+
     6. Tables will update you each day with your current metrics and resources.
     """
 
@@ -498,7 +498,12 @@ def apply_impact(player_resources, impact_type, impact_value):
 
 
     """Apply the calculated impact to the player's resources."""
-    update_resource(player_resources, adjusted_impact_type, impact_value)
+    if '%' in impact_value:
+        modifier = float(impact_value.strip('%')) / 100
+        player_resources[adjusted_impact_type]['Current Value'] *= (1 - modifier)
+    else:
+        player_resources[adjusted_impact_type]['Current Value'] += float(impact_value)
+
     print(f"{adjusted_impact_type} after impact: {player_resources.get(adjusted_impact_type)}")
 
 
