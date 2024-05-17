@@ -18,7 +18,7 @@ ZONE_SYMBOLS = {
 '-': '⚪' # Empty space
 }
 
- """ANSI color codes for colored console output."""
+"""ANSI color codes for colored console output."""
 class Colour:
     HEADER = '\033[95m'
     BLUE = '\033[94m'
@@ -53,9 +53,7 @@ def clear_screen():
 
 def show_intro():
     """
-    Display the game introduction and instructions.
-
-    Shows a welcome message, game instructions, and prompts the user to start the game.
+    Display the game introduction and instructions in clear sections.
     """
     logo = r"""
     __        __   _                  
@@ -64,15 +62,33 @@ def show_intro():
       \ V  V /  __/ | (_| (_) | | | | | |  __/ 
        \_/\_/ \___|_|\___\___/|_| |_| |_|\___|
     """
+    # Welcome and Aim of the Game
     welcome_message = "Welcome to McGee Metropolis!\n"
-    guide = """
+    aim = """
     Aim of the Game:
     You are being challened to build and manage a thriving city. 
     Build zones manage your money, population, electricity and water. 
     Your goal is to reach 200000 in money within 30 days whilst 
     maintaining the Employment Rate, Crime Rate, Happiness Index, & Health.
     Every move has an impact on your resources & metrics, so plan carefully.
+    EG. If you build a residential zone, your population will increase, 
+    but your employment rate will decrease.
+    """
 
+    print(Colour.GREEN + logo + Colour.ENDC)
+    for char in welcome_message:
+        print(Colour.BLUE + char, end='', flush=True)
+        time.sleep(0.05)
+
+    for char in aim:
+        print(Colour.GREEN + char, end='', flush=True)
+        time.sleep(0.02)
+
+    input(Colour.BOLD + "\nPress Enter to read the instructions or any other key to exit the game: " + Colour.ENDC)
+    clear_screen()
+
+    # Game Instructions
+    instructions = """
     Game Instructions:
     1. You will start with a grid representing your city.
     2. You will also be allocated resources.
@@ -81,13 +97,33 @@ def show_intro():
     and keep your metrics balanced.
     5. Random events will impact your city each day.
     6. Tables will update you each day with your current metrics and resources.
+    """
 
+    # Zone Details
+    zone_details = """
      Zone Details:
     - Residential 🟢: Cost to build: 1250, income generated 50 per day
     - Commercial 🟣: Cost to build: 450, income generated 100 per day
     - Industrial 🟤: Cost to build: 450, income generated 75 per day
     - School 🟡: Cost to build: 100, income generated 20 per day
     - Hospital 🔴: Cost to build: 100, income generated 30 per day
+    """
+
+    for char in instructions:
+        print(Colour.GREEN + char, end='', flush=True)
+        time.sleep(0.02)
+    
+    for char in zone_details:
+        print(Colour.GREEN + char, end='', flush=True)
+        time.sleep(0.02)
+
+    input(Colour.BOLD + "\nPress Enter to view tips or any other key to exit the game: " + Colour.ENDC)
+    clear_screen()
+
+    
+    # Metric Stats and Tips
+    metrics_tips = """
+    Top Tips
 
     Metric Stats:
     If you hit any of these metrics, you will lose the game:
@@ -96,7 +132,6 @@ def show_intro():
     Happiness Index: 50
     Health: 50
 
-    Top Tips:
     1. Building any zone will increase your daily income.
     2. If you are building a residential zone, your population will increase but your employment rate will decrease.
     3. If you build a commercial zone your employment rate will increase, but your happiness index will decrease.
@@ -104,25 +139,17 @@ def show_intro():
     5. Building a hospital will boost your citizens health
     6. Building a school will increase your employment rate and boost your happiness index.
     7. Water and electricity regenerate at a rate of 5 per day.
-
-    Are you ready to play?
     """
-    print(Colour.GREEN + logo + Colour.ENDC)
-    for char in welcome_message:
-        print(Colour.BLUE + char, end='', flush=True)
-        time.sleep(0.05)
 
-    for char in guide:
+    for char in metrics_tips:
         print(Colour.GREEN + char, end='', flush=True)
         time.sleep(0.02)
 
-    ready = input(Colour.BOLD + "Press 'Y' to start the game or any other key to exit: " + Colour.ENDC)
-    if ready.lower() != 'y':
-        print(Colour.FAIL + "Game exited. See you next time!" + Colour.ENDC)
-        sys.exit()
+    input(Colour.BOLD + "\nPress Enter to start the game or any other key to exit the game: " + Colour.ENDC)
+    clear_screen()
 
 def fetch_zone_data():
-   """
+    """
     Fetch the data of each zone type from Google Sheets.
 
     Returns:
@@ -244,7 +271,7 @@ def get_resources():
 
 def fetch_player_resources():
     player_resources = {}
-     """
+    """
     Fetch player resources from the 'resources' worksheet and return as a dictionary.
 
     Returns:
