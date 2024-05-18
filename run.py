@@ -1,3 +1,12 @@
+"""
+McGee Metropolis: A city-building game.
+
+This contains the implementation of McGee Metropolis, a game where
+players build and manage a city, balancing resources and metrics to achieve
+goals within a set number of days. The game uses Google Sheets to store and
+retrieve data for game state and resources.
+"""
+
 import random
 import os
 import platform
@@ -22,6 +31,12 @@ ZONE_SYMBOLS = {
 
 
 class Colour:
+    """
+    ANSI colour codes for coloured console output.
+
+    This class provides constants for various ANSI colour codes that can be
+    used to format text output in the console with different colurs and styles.
+    """
     HEADER = '\033[95m'
     BLUE = '\033[94m'
     GREEN = '\033[92m'
@@ -822,9 +837,14 @@ def main():
         if not game_over and current_day > 30:
             if (
                 player_resources['Money']['Current Value'] >= monetary_goal and
-                all(metrics[m] >= min_metrics[m] for m in metrics)
+                all(
+                    metrics[m] >= min_metrics[m]
+                    for m, _ in min_metrics.items()
+                )
             ):
-                print("Congratulations! You have reached your goals and won!")
+                print(
+                    "Congratulations! You have reached your goals and won!"
+                )
             else:
                 print("Unfortunately, you did not meet the goals. Game over.")
         if not confirm_restart():
