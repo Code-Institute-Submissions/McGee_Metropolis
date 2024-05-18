@@ -1,24 +1,25 @@
 import gspread
 from google.oauth2.service_account import Credentials
-import random #imports the random module
+import random   # imports the random module
 import os
-import sys
 import platform
 import time
 
-#Constants
+# Constants
 
 GRID_SIZE = 10
 ZONE_SYMBOLS = {
-'Residential': '🟢', # Residential
-'Commercial': '🟣', # Commercial
-'Industrial': '🟤', # Industrial
-'School': '🟡', # School
-'Hospital': '🔴', # Hospital
-'-': '⚪' # Empty space
+    'Residential': '🟢',  # Residential
+    'Commercial': '🟣',  # Commercial
+    'Industrial': '🟤',  # Industrial
+    'School': '🟡',  # School
+    'Hospital': '🔴',  # Hospital
+    '-': '⚪'  # Empty space
 }
 
 """ANSI color codes for colored console output."""
+
+
 class Colour:
     HEADER = '\033[95m'
     BLUE = '\033[94m'
@@ -29,7 +30,9 @@ class Colour:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-#Google Sheets setup
+# Google Sheets setup
+
+
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive.file",
@@ -41,6 +44,7 @@ SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('McGee_Metropolis')
 
+
 def clear_screen():
     """Clear the console screen.
     Detects the operating system and clears the screen.
@@ -50,6 +54,7 @@ def clear_screen():
         os.system("cls")
     else:
         os.system("clear")
+
 
 def show_intro():
     """
@@ -84,7 +89,10 @@ def show_intro():
         print(Colour.GREEN + char, end='', flush=True)
         time.sleep(0.02)
 
-    input(Colour.BOLD + "\nPress Enter to read the instructions or any other key to exit the game: " + Colour.ENDC)
+    input(
+        Colour.BOLD +
+        "\nPress Enter to read the instructions or any other key to exit: " +
+        Colour.ENDC)
     clear_screen()
 
     # Game Instructions
@@ -122,10 +130,12 @@ def show_intro():
         print(Colour.GREEN + char, end='', flush=True)
         time.sleep(0.02)
 
-    input(Colour.BOLD + "\nPress Enter to view tips or any other key to exit the game: " + Colour.ENDC)
+    input(
+        Colour.BOLD + 
+        "\nPress Enter to view tips or any other key to exit the game: " 
+        + Colour.ENDC)
     clear_screen()
 
-    
     # Metric Stats and Tips
     metrics_tips = """
     Top Tips
@@ -160,15 +170,20 @@ def show_intro():
         print(Colour.GREEN + char, end='', flush=True)
         time.sleep(0.02)
 
-    input(Colour.BOLD + "\nPress Enter to start the game or any other key to exit the game: " + Colour.ENDC)
+    input(
+        Colour.BOLD + 
+        "\nPress Enter to start the game or any other key to exit the game: " 
+        + Colour.ENDC)
     clear_screen()
+
 
 def fetch_zone_data():
     """
     Fetch the data of each zone type from Google Sheets.
 
     Returns:
-        dict: A dictionary with zone types as keys and a dictionary of count and income as values.
+    dict: A dictionary with zone types as keys and a dictionary of count 
+    and income as values.
     """
     try:
         zone_sheet = SHEET.worksheet('zones')
@@ -198,6 +213,7 @@ def fetch_zone_data():
         print(f"Error fetching zone data: {e}")
         return {}
 
+
 def initialize_grid(size):
     """
     Initialise an empty game grid with the specified size.
@@ -210,6 +226,7 @@ def initialize_grid(size):
     """
     return [['-' for _ in range(size)] for _ in range(size)]
 
+
 def initialize_random_grid(size, zone_data):
     """
     Initialise the game grid with random zones based on fetched counts.
@@ -219,7 +236,8 @@ def initialize_random_grid(size, zone_data):
         zone_data (dict): A dictionary containing zone types and their data.
 
     Returns:
-        tuple: A tuple containing the initialied grid and the total daily income.
+        tuple: A tuple containing the initialied grid and the total daily 
+        income.
     """
     grid = [['-' for _ in range(size)] for _ in range(size)]
     positions = [(x, y) for x in range(size) for y in range(size)]
@@ -236,46 +254,66 @@ def initialize_random_grid(size, zone_data):
 
     return grid, total_daily_income
 
+
 def place_zone(grid, zone_type, x, y, player_resources):
     """
-    Place a zone on the grid at the specified coordinates if enough resources are available.
+    Place a zone on the grid at the specified coordinates if enough resources 
+    are available.
 
     Args:
         grid (list): The game grid.
         zone_type (str): The type of zone to place.
         x (int): The x-coordinate.
         y (int): The y-coordinate.
-        player_resources (dict): A dictionary containing the player's resources.
+        player_resources (dict): A dictionary containing the player's 
+        resources.
     """
-    zone_costs = {'Residential': 1250, 'Commercial': 450, 'Industrial': 450, 'School': 100, 'Hospital': 100}  # Costs of resources
+    # Costs of resources
+    zone_costs = {
+        'Residential': 1250, 
+        'Commercial': 450, 
+        'Industrial': 450, 
+        'School': 100, 
+        'Hospital': 100}  
     if player_resources['Money']['Current Value'] >= zone_costs[zone_type]:
         if grid[x][y] == '-':
             grid[x][y] = zone_type
-            player_resources['Money']['Current Value'] -= zone_costs[zone_type]  # Deduct the cost of zone from resources
-            print(f"Congratulations, you built a {zone_type} and placed in the city at {x}, {y}.")
+            # Deduct the cost of zone from resources
+            player_resources['Money']['Current Value'] -= zone_costs[zone_type]  
+            print(
+                f"Congratulations, you built a {zone_type} & placed it at" 
+                f"{x}, {y}."
+            )
             print(f"Remaining Money: {player_resources['Money']}")
         else:
-            print("This plot is already occupied, please choose another plot space")
+            print("This plot is already occupied, please choose another plot")
     else:
         print("Sorry, you do not enough money to build this zone right now.")
+
 
 def print_grid(grid):
     """
     Print the grid to the console with boxed borders and consistent alignment.
-    Also prints a key to help players understand the symbols used for different zones.
+    Also prints a key to help players understand the symbols used for 
+    different zones.
 
     Args:
         grid (list): The game grid.
     """
     cell_width = 4
-    num_columns = len(grid[0])
 
-    header_padding = " " * 5 # Add padding for the row letters
     print("      0   1   2   3   4   5   6   7   8   9")
                                            
     for index, row in enumerate(grid):
         # Print each row with a numerical label
-        row_str = f"{index:2} |" + "|".join(f"{ZONE_SYMBOLS.get(str(cell), '⚪'):^{cell_width}}" for cell in row) + "|"
+        row_str = (
+            f"{index:2} |" + 
+            "|".join(
+                f"{ZONE_SYMBOLS.get(str(cell), '⚪'):^{cell_width}}" 
+                for cell in row
+            ) + 
+            "|"
+        )
         print(row_str)
 
     print()  # Ensure there's a new line after the grid for better spacing
@@ -308,24 +346,32 @@ def get_resources():
     except Exception as e:
         print(f"Error while accessing resources: {e}")
 
+
 def fetch_player_resources():
     player_resources = {}
     """
-    Fetch player resources from the 'resources' worksheet and return as a dictionary.
+    Fetch player resources from the 'resources' worksheet 
+    and return as a dictionary.
 
     Returns:
         dict: A dictionary containing player resources.
     """
     try:
         resources_sheet = SHEET.worksheet('resources')
-        data = resources_sheet.get_all_records()  # Convert list to dictionaries
+        data = resources_sheet.get_all_records()  # Convert list to dictionary
         for res in data:
             resource_type = res['Resource Type']
             current_value = res['Current Value']
             regeneration_rate = res.get('Regeneration Rate', 0)
             # Comma removal and conversion of values
-            current_value = int(current_value.replace(',', '')) if isinstance(current_value, str) and ',' in current_value else int(current_value)
-            regeneration_rate = float(regeneration_rate) if regeneration_rate else 0.0  # Convert to float or default to 0.0 if empty
+            if isinstance(current_value, str) and ',' in current_value:
+                current_value = int(current_value.replace(',', ''))
+            else:
+                current_value = int(current_value)
+            # Convert to float or default to 0.0 if empty
+            regeneration_rate = (
+                float(regeneration_rate) if regeneration_rate else 0.0
+            )
             player_resources[resource_type] = {
                 'Current Value': current_value,
                 'Regeneration Rate': float(regeneration_rate)
@@ -334,20 +380,26 @@ def fetch_player_resources():
         print(f"Error while accessing resources: {e}")
     return (player_resources)
 
+
 def update_resources_in_sheet(player_resources):
     """
     Update the resources back to Google Sheets.
 
     Args:
-        player_resources (dict): A dictionary containing the player's resources.
+        player_resources (dict): 
+        A dictionary containing the player's resources.
     """
     resources_sheet = SHEET.worksheet('resources')
     for resource_type, value in player_resources.items():
-        cell = resources_sheet.find(resource_type)  # Find the cell with the resource type
-        resources_sheet.update_cell(cell.row, cell.col + 1, str(value))  # Update the next column
+        # Find the cell with the resource type
+        cell = resources_sheet.find(resource_type)
+        # Update the next column
+        resources_sheet.update_cell(cell.row, cell.col + 1, str(value))
+
 
 def reset_resources_to_default():
-    """Reset the resource values in the Google Sheet to their default amounts."""
+    """Reset the resource values in the Google Sheet 
+    to their default amounts."""
     try:
         resources_sheet = SHEET.worksheet('resources')
         default_resources = {
@@ -358,25 +410,29 @@ def reset_resources_to_default():
         }
         # Iterate over the default_resources dictionary and update the sheet
         for resource, value in default_resources.items():
-            cell = resources_sheet.find(resource)  # Find the cell with the resource type
-            resources_sheet.update_cell(cell.row, cell.col + 1, value)  # Update the resource value to default
+            # Find the cell with the resource type
+            cell = resources_sheet.find(resource)
+            # Update the resource value to default
+            resources_sheet.update_cell(cell.row, cell.col + 1, value)
         print("Resources have been reset to default values.")
     except Exception as e:
         print(f"Failed to reset resources: {e}")
+
 
 def regenerate_resources(player_resources, total_daily_income):
     """
     Regenerate resources daily and add daily income.
 
     Args:
-        player_resources (dict): A dictionary containing the player's resources.
-        total_daily_income (float): The total daily income generated by the zones.
+        player_resources (dict): A dictionary containing the player resources.
+        total_daily_income (float): The total daily income generated by zones.
     """
     for resource, values in player_resources.items():
         # Apply the regeneration rate directly to the current value
         values['Current Value'] += values['Regeneration Rate']
     # Add daily income to the player's money
     player_resources['Money']['Current Value'] += total_daily_income
+
 
 def print_resources(resources):
     """
@@ -393,8 +449,10 @@ def print_resources(resources):
     print(Colour.BLUE + "Resources:" + Colour.ENDC)
     print(header)
     for key, value in resources.items():
-       print(f"{key:<15} {value['Current Value']:10} {value['Regeneration Rate']:15.2f}")
+        print(f"{key:<15} {value['Current Value']:10} "
+              f"{value['Regeneration Rate']:15.2f}")
     print()
+
 
 def handle_zone_action(grid, player_resources):
     """
@@ -402,16 +460,21 @@ def handle_zone_action(grid, player_resources):
 
     Args:
         grid (list): The game grid.
-        player_resources (dict): A dictionary containing the player's resources.
+        player_resources (dict): A dictionary containing the player resources.
     """
     clear_screen()
     while True:
         try:
-            x = int(input(f"Enter X coordinate for building a zone (0-{GRID_SIZE-1}): "))
-            y = int(input(f"Enter Y coordinate for building a zone (0-{GRID_SIZE-1}): "))
+            x = int(input(f"Enter X coordinate to build a zone "
+                          f"(0-{GRID_SIZE-1}): "))
+            y = int(input(f"Enter Y coordinate to build a zone "
+                          f"(0-{GRID_SIZE-1}): "))
 
             if 0 <= x < GRID_SIZE and 0 <= y < GRID_SIZE:
-                zone_input = input("Enter zone type - R (Residential), C (Commercial), I (Industrial), S (School), H (Hospital): ").upper()
+                zone_input = input(
+                    "Enter zone type - R (Residential), C (Commercial),"  
+                    "I (Industrial), S (School), H (Hospital): "
+                ).upper()
 
                 # Map input to full names for internal logic
                 zone_map = {
@@ -427,11 +490,15 @@ def handle_zone_action(grid, player_resources):
                     place_zone(grid, zone_type, x, y, player_resources) 
                     break
                 else:
-                    print("Invalid zone type. Please use 'R', 'C', 'I', 'S', or 'H'.")
+                    print("Invalid. Please use 'R', 'C', 'I', 'S', or 'H'")
             else:
-                print(f"Invalid coordinates. Please enter values between 0 and {GRID_SIZE - 1}.")
+                print(
+                    f"Invalid coordinates. Please enter values between 0 "
+                    f"and {GRID_SIZE - 1}."
+                )
         except ValueError:
             print("Invalid input. Please enter numeric grid coordinates.")
+
 
 def fetch_events():
     """
@@ -448,20 +515,30 @@ def fetch_events():
         event['Duration'] = int(event.get('Duration', 0))
     return events
 
+
 def apply_random_event(events, player_resources, day):
     """
-    Randomly select and apply an event effect if it's not currently active, and handle event duration.
+    Randomly select and apply an event effect if it's not currently active, 
+    and handle event duration.
 
     Args:
         events (list): A list of dictionaries containing event data.
-        player_resources (dict): A dictionary containing the player's resources.
+        player_resources (dict): A dictionary containing the resources.
         day (int): The current day in the game.
     """
     active_events = [event for event in events if event['Active']]
     for event in active_events:
         if event['Duration'] > 0:
-            print(f"Oh no, an event is impacting the city: {event['Description']} resulting in {event['Impact Type']} of {event['Impact Value']}. Days left: {event['Duration']}")
-            apply_impact(player_resources, event['Impact Type'], event['Impact Value'])
+            print(
+                f"Oh no, an event is impacting the city:" 
+                f"{event['Description']} "
+                f"resulting in {event['Impact Type']}"
+                f"of {event['Impact Value']}. "
+                f"Days left: {event['Duration']}"
+            )
+            apply_impact(
+                player_resources, event['Impact Type'], event['Impact Value']
+            )
             event['Duration'] -= 1
         if event['Duration'] <= 0:
             event['Active'] = False
@@ -471,15 +548,25 @@ def apply_random_event(events, player_resources, day):
         if not new_event['Active']:
             new_event['Active'] = True
             new_event['Duration'] = int(new_event.get('Duration', 1))
-            print(f"Oh no, a new event has started: {new_event['Description']} resulting in {new_event['Impact Type']} by {new_event['Impact Value']} for {new_event['Duration']} days.")
-            apply_impact(player_resources, new_event['Impact Type'], new_event['Impact Value'])
+            print(
+                f"Oh no, a new event has started: {new_event['Description']} "
+                f"resulting in {new_event['Impact Type']}"
+                f" by {new_event['Impact Value']} "
+                f"for {new_event['Duration']} days."
+            )
+            apply_impact(
+                player_resources, 
+                new_event['Impact Type'], 
+                new_event['Impact Value']
+            )
+
 
 def apply_impact(player_resources, impact_type, impact_value):
     """
     Apply the calculated impact to the player's resources.
 
     Args:
-        player_resources (dict): A dictionary containing the player's resources.
+        player_resources (dict): A dictionary containing the player resources.
         impact_type (str): The type of impact.
         impact_value (str): The value of the impact.
     """
@@ -496,15 +583,21 @@ def apply_impact(player_resources, impact_type, impact_value):
     if not adjusted_impact_type:
         return  # Exit if no valid mapping exists
 
-
     """Apply the calculated impact to the player's resources."""
     if '%' in impact_value:
         modifier = float(impact_value.strip('%')) / 100
-        player_resources[adjusted_impact_type]['Current Value'] *= (1 - modifier)
+        player_resources[adjusted_impact_type]['Current Value'] *= (
+            1 - modifier
+        )
     else:
-        player_resources[adjusted_impact_type]['Current Value'] += float(impact_value)
+        player_resources[adjusted_impact_type]['Current Value'] += (
+            float(impact_value)
+        )
 
-    print(f"{adjusted_impact_type} after impact: {player_resources.get(adjusted_impact_type)}")
+    print(
+        f"{adjusted_impact_type} after impact: "
+        f"{player_resources.get(adjusted_impact_type)}"
+    )
 
 
 def update_resource(player_resources, resource_type, impact_value):
@@ -512,7 +605,7 @@ def update_resource(player_resources, resource_type, impact_value):
     Update a specific resource based on an impact value.
 
     Args:
-        player_resources (dict): A dictionary containing the player's resources.
+        player_resources (dict): A dictionary containing the resources.
         resource_type (str): The type of resource to update.
         impact_value (str): The value of the impact.
     """
@@ -521,6 +614,7 @@ def update_resource(player_resources, resource_type, impact_value):
         player_resources[resource_type] *= (1 + modifier)
     else:
         player_resources[resource_type] += float(impact_value)
+
 
 def fetch_metrics():
     """
@@ -536,6 +630,7 @@ def fetch_metrics():
         'Health': 80
     }
 
+
 def check_metrics(metrics):
     """
     Check if any metrics have fallen below or above critical levels.
@@ -544,7 +639,7 @@ def check_metrics(metrics):
         metrics (dict): A dictionary containing the current metrics.
 
     Returns:
-        bool: True if all metrics are within acceptable levels, False otherwise.
+        bool: True if all metrics are within acceptable levels, False if not.
     """
     min_values = {
         'Employment Rate': 50,
@@ -562,6 +657,7 @@ def check_metrics(metrics):
                 print(f"Game Over: {metric} is too low!")
                 return False
     return True
+
 
 def update_metrics(metrics, zone_type, amount):
     """
@@ -588,6 +684,7 @@ def update_metrics(metrics, zone_type, amount):
     metrics['Happiness Index'] = min(max(metrics['Happiness Index'], 0), 100)
     metrics['Health'] = min(max(metrics['Health'], 0), 100)
 
+
 def print_metrics(metrics):
     """
     Print the current metrics in a formatted table.
@@ -605,6 +702,7 @@ def print_metrics(metrics):
         print(f"{key:<20} {value:10}%")
     print()
 
+
 def print_help():
     """
     Print the help message displaying available commands.
@@ -614,6 +712,7 @@ def print_help():
     print("  next - Move to the next day.")
     print("  restart - Restart the game.")
     print("  help - Show this help message.")
+
 
 def confirm_restart():
     """
@@ -625,6 +724,7 @@ def confirm_restart():
     response = input("Are you sure you want to restart the game? (yes/no): ")
     return response.lower() == 'yes'
 
+
 def confirm_exit():
     """
     Confirm before exiting the game.
@@ -633,7 +733,9 @@ def confirm_exit():
         bool: True if the player confirms exit, False otherwise.
     """
     """Confirm before exiting the game."""
-    confirm = input("Are you sure you want to exit the game? (yes/no): ").lower()
+    confirm = input(
+        "Are you sure you want to exit the game? (yes/no): "
+    ).lower()
     return confirm == 'yes'
 
 
@@ -645,7 +747,13 @@ def main():
     """
     show_intro()  # Show introduction and instructions at the start
     monetary_goal = 200000
-    min_metrics = {'Employment Rate': 50, 'Crime Rate': 50, 'Happiness Index': 50, 'Health': 50}  # Minimum / maximum acceptable metric values
+    # Minimum / maximum acceptable metric values
+    min_metrics = {
+        'Employment Rate': 50, 
+        'Crime Rate': 50, 
+        'Happiness Index': 50, 
+        'Health': 50
+    }
     while True:
         zone_data = fetch_zone_data()
         events = fetch_events()
@@ -654,28 +762,41 @@ def main():
         current_day = 1  # Start the day counter
         
         if zone_data:
-            grid, total_daily_income = initialize_random_grid(GRID_SIZE, zone_data)
+            grid, total_daily_income = initialize_random_grid(
+                GRID_SIZE, zone_data
+            )
         else:
             # If fetching fails, fallback to an empty grid
             grid, total_daily_income = initialize_grid(GRID_SIZE), 0
         game_over = False
-        while current_day <=30 and not game_over:
+        while current_day <= 30 and not game_over:
             clear_screen()
             print("McGee Metropolis City Map:")
             print_grid(grid)
             print("\nCurrent Resources and Metrics:")
-            print_resources(player_resources)  # Function to print resources in a formatted table
-            print_metrics(metrics)  # Function to print metrics in a formatted table
+            # Function to print resources in a formatted table
+            print_resources(player_resources)
+            # Function to print metrics in a formatted table
+            print_metrics(metrics)
 
-            regenerate_resources(player_resources, total_daily_income)
             print(f"Day {current_day}: Good Morning! A New day has started...")
             apply_random_event(events, player_resources, current_day)
+            regenerate_resources(player_resources, total_daily_income)
             if not check_metrics(metrics):
-                print("One or more metrics have fallen below or above critical levels. The game is over, better luck next time!")
+                print(
+                    "One or more metrics have reached critical levels. "
+                    "The game is over, better luck next time!"
+                )
                 game_over = True
                 continue
 
-            action = input("\nChoose the action you would like to take, build a zone, go to the next day, access help or exit the game: (zone/next/help/exit): ").lower()
+            action = input(
+                "\nChoose the action you would like to take:" 
+                "1. Build a zone" 
+                "2. Go to the next day"
+                "3. Access help"
+                "4. Exit the game: (zone/next/help/exit): "
+            ).lower()
             if action == 'zone':
                 handle_zone_action(grid, player_resources)
                 print_grid(grid)
@@ -690,20 +811,23 @@ def main():
                     print("Resources and metrics have been reset.")
                     break
             elif action == 'help':
-               print_help()
+                print_help()
             elif action == 'exit':
                 if confirm_exit():
                     print("Exiting the game.")
                     reset_resources_to_default()  # Reset resources on exit
                     return
             else:
-                print("Invalid action. Please choose 'zone', 'next', 'help', or 'exit'.")
+                print("Invalid. Choose 'zone', 'next', 'help', or 'exit'.")
 
             update_resources_in_sheet(player_resources)
             
         if not game_over and current_day > 30:
-            if player_resources['Money']['Current Value'] >= monetary_goal and all(metrics[m] >= min_metrics[m] for m in metrics):
-                print("Congratulations! You have reached your goals and won the game.")
+            if (
+                player_resources['Money']['Current Value'] >= monetary_goal and
+                all(metrics[m] >= min_metrics[m] for m in metrics)
+            ):
+                print("Congratulations! You have reached your goals and won!")
             else:
                 print("Unfortunately, you did not meet the goals. Game over.")
         if not confirm_restart():
@@ -712,6 +836,7 @@ def main():
         print("Current Resources and Metrics:")
         print_resources(player_resources)
         print_metrics(metrics)
+
 
 if __name__ == "__main__":
     main()
