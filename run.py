@@ -105,12 +105,31 @@ def show_intro():
         print(Colour.GREEN + char, end='', flush=True)
         time.sleep(0.02)
 
-    input(
-        Colour.BOLD +
-        "\nPress Enter to read the instructions or any other key to exit: " +
-        Colour.ENDC)
+    while True:
+        choice = input(
+            Colour.BOLD +
+            "\nPress Enter to read the instructions,\n" +
+            "'play' to start the game, or 'exit' to exit: " +
+            Colour.ENDC).strip().lower()
+        if choice == '':
+            clear_screen()
+            show_instructions()
+            break
+        elif choice == 'play':
+            clear_screen()
+            break
+        elif choice == 'exit':
+            print("Exiting the game.")
+            exit()
+        else:
+            print("Invalid input. Please press Enter, type 'play', or type 'exit'.")
     clear_screen()
 
+
+def show_instructions():
+    """
+    Display the game instructions in clear sections.
+    """
     # Game Instructions
     instructions = """
     Game Instructions:
@@ -145,13 +164,30 @@ def show_intro():
         print(Colour.GREEN + char, end='', flush=True)
         time.sleep(0.02)
 
-    input(
-        Colour.BOLD +
-        "\nPress Enter to view tips or any other key to exit the game: "
-        + Colour.ENDC)
+    while True:
+        choice = input(
+            Colour.BOLD +
+            "\nPress Enter to read the tips, 'play' to start the game, or 'exit' to exit: " +
+            Colour.ENDC).strip().lower()
+        if choice == '':
+            clear_screen()
+            show_tips()
+            break
+        elif choice == 'play':
+            clear_screen()
+            break
+        elif choice == 'exit':
+            print("Exiting the game.")
+            exit()
+        else:
+            print("Invalid input. Please press Enter, type 'play', or type 'exit'.")
     clear_screen()
 
-    # Metric Stats and Tips
+
+def show_tips():
+    """
+    Display game tips and metric stats.
+    """
     metrics_tips = """
     Top Tips
 
@@ -185,10 +221,19 @@ def show_intro():
         print(Colour.GREEN + char, end='', flush=True)
         time.sleep(0.02)
 
-    input(
-        Colour.BOLD +
-        "\nPress Enter to start the game or any other key to exit the game: "
-        + Colour.ENDC)
+    while True:
+        choice = input(
+            Colour.BOLD +
+            "\nPress 'play' to start the game, or 'exit' to exit: " +
+            Colour.ENDC).strip().lower()
+        if choice == 'play':
+            clear_screen()
+            break
+        elif choice == 'exit':
+            print("Exiting the game.")
+            exit()
+        else:
+            print("Invalid input. Please type 'play', or type 'exit'.")
     clear_screen()
 
 
