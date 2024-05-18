@@ -864,7 +864,8 @@ def main():
                 "1. Build a zone  "
                 "2. Go to the next day  "
                 "3. Access help  "
-                "4. Exit the game: (zone/next/help/exit):  "
+                "4. Restart the game  "
+                "5. Exit the game: (zone/next/help/restart/exit):  "
             ).lower()
             if action == 'zone':
                 handle_zone_action(grid, player_resources)
@@ -887,7 +888,7 @@ def main():
                     reset_resources_to_default()  # Reset resources on exit
                     return
             else:
-                print("Invalid. Choose 'zone', 'next', 'help', or 'exit'.")
+                print("Invalid. Choose 'zone', 'next', 'restart', 'help', or 'exit'.")
 
             update_resources_in_sheet(player_resources)
         if not game_over and current_day > 30:
