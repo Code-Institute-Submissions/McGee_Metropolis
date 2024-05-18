@@ -496,7 +496,10 @@ def regenerate_resources(player_resources, total_daily_income):
     """
     for resource, values in player_resources.items():
         # Apply the regeneration rate directly to the current value
-        values['Current Value'] += values['Regeneration Rate']
+        if isinstance(values, dict):
+            values['Current Value'] += values['Regeneration Rate']
+        else:
+            print(f"Unexpected data structure for {resource}: {values}")
     # Add daily income to the player's money
     player_resources['Money']['Current Value'] += total_daily_income
 
@@ -858,10 +861,10 @@ def main():
 
             action = input(
                 "\nChoose the action you would like to take:"
-                "1. Build a zone"
-                "2. Go to the next day"
-                "3. Access help"
-                "4. Exit the game: (zone/next/help/exit): "
+                "1. Build a zone  "
+                "2. Go to the next day  "
+                "3. Access help  "
+                "4. Exit the game: (zone/next/help/exit):  "
             ).lower()
             if action == 'zone':
                 handle_zone_action(grid, player_resources)
