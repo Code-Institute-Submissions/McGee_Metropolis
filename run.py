@@ -815,6 +815,24 @@ def main():
 
     Initialises the game, handles the main game loop, and manages game state.
     """
+    def start_new_game():
+        """
+        Initialises a new game state.
+        Returns:
+            tuple: grid, total_daily_income, player_resources, metrics, events, current_day
+        """
+        zone_data = fetch_zone_data()
+        events = fetch_events()
+        player_resources = fetch_player_resources()
+        metrics = fetch_metrics()
+        current_day = 1  # Start the day counter
+        if zone_data:
+            grid, total_daily_income = initialize_random_grid(GRID_SIZE, zone_data)
+        else:
+            # If fetching fails, fallback to an empty grid
+            grid, total_daily_income = initialize_grid(GRID_SIZE), 0
+        return grid, total_daily_income, player_resources, metrics, events, current_day
+
     show_intro()  # Show introduction and instructions at the start
     monetary_goal = 200000
     # Minimum / maximum acceptable metric values
@@ -825,18 +843,7 @@ def main():
         'Health': 50
     }
     while True:
-        zone_data = fetch_zone_data()
-        events = fetch_events()
-        player_resources = fetch_player_resources()
-        metrics = fetch_metrics()
-        current_day = 1  # Start the day counter
-        if zone_data:
-            grid, total_daily_income = initialize_random_grid(
-                GRID_SIZE, zone_data
-            )
-        else:
-            # If fetching fails, fallback to an empty grid
-            grid, total_daily_income = initialize_grid(GRID_SIZE), 0
+        grid, total_daily_income, player_resources, metrics, events, current_day = start_new_game()
         game_over = False
         while current_day <= 30 and not game_over:
             clear_screen()
@@ -861,11 +868,11 @@ def main():
 
             action = input(
                 "\nChoose the action you would like to take:"
-                "1. Build a zone  "
-                "2. Go to the next day  "
-                "3. Access help  "
-                "4. Restart the game  "
-                "5. Exit the game: (zone/next/help/restart/exit):  "
+                "\n1. Build a zone  "
+                "\n2. Go to the next day  "
+                "\n3. Access help  "
+                "\n4. Restart the game  "
+                "\n5. Exit the game: (zone/next/help/restart/exit):  "
             ).lower()
             if action == 'zone':
                 handle_zone_action(grid, player_resources)
@@ -875,10 +882,6 @@ def main():
             elif action == 'restart':
                 if confirm_restart():  # Confirm restart decision
                     print("Restarting the game.")
-                    reset_resources_to_default()
-                    metrics = fetch_metrics()
-                    player_resources = fetch_player_resources()
-                    print("Resources and metrics have been reset.")
                     break
             elif action == 'help':
                 print_help()
@@ -891,25 +894,21 @@ def main():
                 print("Invalid. Choose 'zone', 'next', 'restart', 'help', or 'exit'.")
 
             update_resources_in_sheet(player_resources)
-        if not game_over and current_day > 30:
-            if (
-                player_resources['Money']['Current Value'] >= monetary_goal and
-                all(
-                    metrics[m] >= min_metrics[m]
-                    for m, _ in min_metrics.items()
-                )
-            ):
-                print(
-                    "Congratulations! You have reached your goals and won!"
-                )
+        if game_over:
+            if not confirm_restart():
+                print("Exiting the game.")
+                break
+        elif current_day > 30:
+            if (player_resources['Money']['Current Value'] >= monetary_goal and
+                all(metrics[m] >= min_metrics[m] for m, _ in min_metrics.items())):
+                print("Congratulations! You have reached your goals and won!")
             else:
                 print("Unfortunately, you did not meet the goals. Game over.")
-        if not confirm_restart():
-            print("Exiting the game.")
-            break
-        print("Current Resources and Metrics:")
-        print_resources(player_resources)
-        print_metrics(metrics)
+            if not confirm_restart():
+                print("Exiting the game.")
+                break
+
+    show_intro()  # Show introduction and instructions again if exiting the game
 
 
 if __name__ == "__main__":
