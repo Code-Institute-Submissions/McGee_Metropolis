@@ -583,6 +583,7 @@ def fetch_events():
     for event in events:
         event['Active'] = False
         event['Duration'] = int(event.get('Duration', 0))
+    print("Events fetched:", events)  # Debugging statement
     return events
 
 
@@ -631,7 +632,8 @@ def apply_random_event(events, player_resources, last_event=None):
                 new_event['Impact Value']
             )
             return new_event['Description']
-        return None
+        return last_event
+
 
 def apply_impact(player_resources, impact_type, impact_value):
     """
@@ -644,10 +646,9 @@ def apply_impact(player_resources, impact_type, impact_value):
     """
     # Mapping from event impact types to player resource keys
     impact_type_map = {
-        'electricity supply reduction': 'Electricity',
+        'an electricity supply reduction': 'Electricity',
         'an income reduction': 'Money',
-        'water supply reduction': 'Water',
-
+        'a water supply reduction': 'Water',
     }
 
     adjusted_impact_type = impact_type_map.get(impact_type, None)
@@ -656,21 +657,7 @@ def apply_impact(player_resources, impact_type, impact_value):
     if not adjusted_impact_type:
         return  # Exit if no valid mapping exists
 
-    # Apply the calculated impact to the player's resources.
-    if '%' in impact_value:
-        modifier = float(impact_value.strip('%')) / 100
-        player_resources[adjusted_impact_type]['Current Value'] *= (
-            1 - modifier
-        )
-    else:
-        player_resources[adjusted_impact_type]['Current Value'] += (
-            float(impact_value)
-        )
-
-    print(
-        f"{adjusted_impact_type} after impact: "
-        f"{player_resources.get(adjusted_impact_type)}"
-    )
+    update_resource(player_resources, adjusted_impact_type, impact_value)
 
 
 def update_resource(player_resources, resource_type, impact_value):
@@ -684,9 +671,9 @@ def update_resource(player_resources, resource_type, impact_value):
     """
     if '%' in impact_value:
         modifier = float(impact_value.strip('%')) / 100
-        player_resources[resource_type] *= (1 + modifier)
+        player_resources[resource_type]['Current Value'] *= (1 + modifier)
     else:
-        player_resources[resource_type] += float(impact_value)
+        player_resources[resource_type]['Current Value'] += float(impact_value)
 
 
 def fetch_metrics():
@@ -808,7 +795,6 @@ def start_new_game(reset_resources=True):
     """
     if reset_resources:
         reset_resources_to_default()  # Reset resources when starting a new game
-    
     zone_data = fetch_zone_data()
     events = fetch_events()
     player_resources = fetch_player_resources()
@@ -888,6 +874,7 @@ def main():
             print(f"Day {current_day}: Good Morning! A New day has started...")
             last_event = apply_random_event(events, player_resources, last_event)
             regenerate_resources(player_resources, total_daily_income)
+            update_resources_in_sheet(player_resources)
             if not check_metrics(metrics):
                 print(
                     "One or more metrics have reached critical levels. "
