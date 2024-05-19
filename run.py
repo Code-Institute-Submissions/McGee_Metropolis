@@ -22,7 +22,6 @@ ZONE_SYMBOLS = {
     'Residential': '🟢',  # Residential
     'Commercial': '🟣',  # Commercial
     'Industrial': '🟤',  # Industrial
-
     'School': '🟡',  # School
     'Hospital': '🔴',  # Hospital
     '-': '⚪'  # Empty space
@@ -54,7 +53,7 @@ SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive.file",
     "https://www.googleapis.com/auth/drive"
-    ]
+]
 
 CREDS = Credentials.from_service_account_file('creds.json')
 SCOPED_CREDS = CREDS.with_scopes(SCOPE)
@@ -423,10 +422,7 @@ def fetch_player_resources():
 
             # Convert current_value to int, handling floats and strings
             try:
-                if isinstance(current_value, str) and ',' in current_value:
-                    current_value = int(current_value.replace(',', ''))
-                else:
-                    current_value = int(float(current_value))
+                current_value = float(str(current_value).replace(',', ''))
             except ValueError:
                 print(f"Invalid value for {resource_type}: {current_value}")
                 current_value = 0
@@ -439,7 +435,7 @@ def fetch_player_resources():
 
             player_resources[resource_type] = {
                 'Current Value': current_value,
-                'Regeneration Rate': float(regeneration_rate)
+                'Regeneration Rate': regeneration_rate
             }
     except GSpreadException as e:
         print(f"Google Sheets error fetching player resources: {e}")
@@ -456,11 +452,12 @@ def update_resources_in_sheet(player_resources):
     """
     try:
         resources_sheet = SHEET.worksheet('resources')
-        for resource_type, value in player_resources.items():
+        for resource_type, values in player_resources.items():
             # Find the cell with the resource type
             cell = resources_sheet.find(resource_type)
-            # Update the next column
-            resources_sheet.update_cell(cell.row, cell.col + 1, str(value))
+            # Update the cell values
+            resources_sheet.update_cell(cell.row, cell.col + 1, values['Current Value'])
+            resources_sheet.update_cell(cell.row, cell.col + 2, values['Regeneration Rate'])
     except GSpreadException as e:
         print(f"Google Sheets error updating resources: {e}")
 
@@ -833,7 +830,6 @@ def main():
             # If fetching fails, fallback to an empty grid
             grid, total_daily_income = initialize_grid(GRID_SIZE), 0
         return grid, total_daily_income, player_resources, metrics, events, current_day
-
 
     def show_goodbye_message():
         """
