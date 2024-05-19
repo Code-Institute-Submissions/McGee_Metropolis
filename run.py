@@ -27,6 +27,8 @@ ZONE_SYMBOLS = {
     '-': '⚪'  # Empty space
 }
 
+MAX_ZONES_PER_DAY = 3  # Maximum number of zones that can be built in a day
+
 """ANSI color codes for colored console output."""
 
 
@@ -89,7 +91,7 @@ def show_intro():
     Aim of the Game:
     You are being challenged to build and manage a thriving city.
     Build zones, manage your money, electricity and water.
-    Your goal is to reach 200000 in money within 30 days whilst
+    Your goal is to reach 2000000 in money within 30 days whilst
     maintaining the Employment Rate, Crime Rate, Happiness Index, & Health.
     Every move has an impact on your resources & metrics, so plan carefully.
     EG. If you build a residential zone your employment rate will decrease.
@@ -197,7 +199,7 @@ def show_tips():
     Happiness Index: 50
     Health: 50
 
-    1. Building any zone will increase your daily income.
+    1. Building any zone will increase your daily income, max 3 built per day.
 
     2. If you are building a residential zone your employment rate will decrease.
 
@@ -344,7 +346,7 @@ def place_zone(grid, zone_type, x, y, player_resources, metrics):
                 f"{x}, {y}."
             )
             print(f"Remaining Money: {player_resources['Money']}")
-            update_metrics(metrics, zone_type, 1)
+            update_metrics(metrics, player_resources, zone_type, 1)
         else:
             print("This plot is already occupied, please choose another plot")
     else:
@@ -719,7 +721,7 @@ def check_metrics(metrics):
     return True
 
 
-def update_metrics(metrics, zone_type, amount):
+def update_metrics(metrics, player_resources, zone_type, amount):
     """
     Update the metrics based on the type and amount of zone built.
 
@@ -729,20 +731,20 @@ def update_metrics(metrics, zone_type, amount):
         zone_type (str): The type of zone built.
         amount (int): The number of zones built.
     """
-    if zone_type == 'Commercial':
-        metrics['Employment Rate'] += amount * 2  # Increase by 2%
-        metrics['Money'] += amount * 5  # Increase by 5%
-        metrics['Happiness Index'] -= amount * 1  # Decrease by 1%
+    if zone_type == 'Residential':
+        metrics['Employment Rate'] -= amount * 5  # Employment rate decreases
+    elif zone_type == 'Commercial':
+        player_resources['Money']['Current Value'] += player_resources['Money']['Current Value'] * 0.05
+        metrics['Employment Rate'] += amount * 2  # Employment rate increases
+        metrics['Happiness Index'] -= amount * 1  # Happiness decreases
     elif zone_type == 'Industrial':
-        metrics['Happiness Index'] -= amount * 1  # Decrease by 1%
-        metrics['Health'] -= amount * 1  # Decrease by 1%
-    elif zone_type == 'Residential':
-        metrics['Employment Rate'] -= amount * 5  # Decrease by 5%
+        metrics['Happiness Index'] -= amount * 1  # Happiness decreases
+        metrics['Health'] -= amount * 1  # Health decreases
     elif zone_type == 'School':
-        metrics['Employment Rate'] += amount * 2  # Increase by 2%
-        metrics['Happiness Index'] += amount * 1  # Increase by 1%
+        metrics['Employment Rate'] += amount * 2  # Employment rate increases
+        metrics['Happiness Index'] += amount * 1  # Happiness increases
     elif zone_type == 'Hospital':
-        metrics['Health'] += amount * 5  # Increase by 5%
+        metrics['Health'] += amount * 5  # Health increases
 
     # Ensure metrics don't go out of bounds
     metrics['Employment Rate'] = min(max(metrics['Employment Rate'], 0), 100)
@@ -855,7 +857,7 @@ def main():
     """
 
     show_intro()  # Show introduction and instructions at the start
-    monetary_goal = 200000
+    monetary_goal = 2000000
     # Minimum / maximum acceptable metric values
     min_metrics = {
         'Employment Rate': 50,
@@ -867,6 +869,7 @@ def main():
         grid, total_daily_income, player_resources, metrics, events, current_day = start_new_game()
         game_over = False
         last_event = None
+        zones_built_today = 0  # Track zones built in the current day
         while current_day <= 30 and not game_over:
             clear_screen()
             print("McGee Metropolis City Map:")
@@ -880,7 +883,6 @@ def main():
             print(f"Day {current_day}: Good Morning! A New day has started...")
             last_event = apply_random_event(events, player_resources, last_event)
             regenerate_resources(player_resources, total_daily_income)
-            update_resources_in_sheet(player_resources)
             if not check_metrics(metrics):
                 print(
                     "One or more metrics have reached critical levels. "
@@ -889,50 +891,64 @@ def main():
                 game_over = True
                 continue
 
-            action = input(
-                "\nChoose the action you would like to take:"
-                "\n1. Build a zone  "
-                "\n2. Go to the next day  "
-                "\n3. Access help  "
-                "\n4. Restart the game  "
-                "\n5. Exit the game: (zone/next/help/restart/exit):  "
-            ).lower()
-            if action == 'zone':
-                handle_zone_action(grid, player_resources, metrics)
-                print_grid(grid)
-            elif action == 'next':
-                current_day += 1  # Increment the day counter
-            elif action == 'restart':
-                if confirm_restart():  # Confirm restart decision
-                    print("Restarting the game.")
-                    grid, total_daily_income, player_resources, metrics, events, current_day = start_new_game(reset_resources=True)
-                    last_event = None
-                    continue
-            elif action == 'help':
-                print_help()
-            elif action == 'exit':
-                if confirm_exit():
-                    if show_goodbye_message():
-                        reset_resources_to_default()  # Reset resources on exit
-                        break
+            if zones_built_today < MAX_ZONES_PER_DAY:
+                action = input(
+                    "\nChoose the action you would like to take:"
+                    "\n1. Build a zone  "
+                    "\n2. Go to the next day  "
+                    "\n3. Access help  "
+                    "\n4. Restart the game  "
+                    "\n5. Exit the game: (zone/next/help/restart/exit):  "
+                ).lower()
+                if action == 'zone':
+                    handle_zone_action(grid, player_resources, metrics)
+                    print_grid(grid)
+                elif action == 'next':
+                    current_day += 1  # Increment the day counter
+                    zones_built_today = 0  # Reset the counter for the new day
+                elif action == 'restart':
+                    if confirm_restart():  # Confirm restart decision
+                        print("Restarting the game.")
+                        grid, total_daily_income, player_resources, metrics, events, current_day = start_new_game(reset_resources=True)
+                        last_event = None
+                        continue
+                elif action == 'help':
+                    print_help()
+                elif action == 'exit':
+                    if confirm_exit():
+                        if show_goodbye_message():
+                            reset_resources_to_default()  # Reset resources on exit
+                            break
+                else:
+                    print("Invalid. Choose 'zone', 'next', 'restart', 'help', or 'exit'.")
+
             else:
-                print("Invalid. Choose 'zone', 'next', 'restart', 'help', or 'exit'.")
+                print("You have reached the maximum number of zones you can build today.")
+                action = input("\nPress 'next' to move to the next day or 'exit' to exit the game: ").lower()
+                if action == 'next':
+                    current_day += 1  # Increment the day counter
+                    zones_built_today = 0  # Reset the counter for the new day
+                elif action == 'exit':
+                    if confirm_exit():
+                        if show_goodbye_message():
+                            reset_resources_to_default()  # Reset resources on exit
+                            break
 
             update_resources_in_sheet(player_resources)
-        if game_over or current_day > 30:
-            if current_day > 30 and not game_over:
-                if (
-                    player_resources['Money']['Current Value'] >= monetary_goal and
-                    all(metrics[m] >= min_metrics[m] for m in min_metrics)
-                ):
-                    print("Congratulations! You have reached your goals and won!")
-                else:
-                    print("Unfortunately, you did not meet the goals. Game over.")
-            if not confirm_restart() or game_over:
-                if show_goodbye_message():
-                    continue
-                else:
-                    break
+            if game_over or current_day > 30:
+                if current_day > 30 and not game_over:
+                    if (
+                        player_resources['Money']['Current Value'] >= monetary_goal and
+                        all(metrics[m] >= min_metrics[m] for m in min_metrics)
+                    ):
+                        print("Congratulations! You have reached your goals and won!")
+                    else:
+                        print("Unfortunately, you did not meet the goals. Game over.")
+                if not confirm_restart() or game_over:
+                    if show_goodbye_message():
+                        continue
+                    else:
+                        break
 
     show_intro()  # Show introduction and instructions
 
