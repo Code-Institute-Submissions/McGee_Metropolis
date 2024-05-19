@@ -586,7 +586,7 @@ def fetch_events():
     return events
 
 
-def apply_random_event(events, player_resources):
+def apply_random_event(events, player_resources, last_event=None):
     """
     Randomly select and apply an event effect if it's not currently active,
     and handle event duration.
@@ -594,6 +594,7 @@ def apply_random_event(events, player_resources):
     Args:
         events (list): A list of dictionaries containing event data.
         player_resources (dict): A dictionary containing the resources.
+        last_event (str): The description of the last event applied.
         day (int): The current day in the game.
     """
     active_events = [event for event in events if event['Active']]
@@ -614,7 +615,7 @@ def apply_random_event(events, player_resources):
             event['Active'] = False
 
     if not any(event['Active'] for event in events):
-        new_event = random.choice(events)
+        new_event = random.choice([event for event in events if event['Description'] != last_event])
         if not new_event['Active']:
             new_event['Active'] = True
             new_event['Duration'] = int(new_event.get('Duration', 1))
@@ -629,7 +630,8 @@ def apply_random_event(events, player_resources):
                 new_event['Impact Type'],
                 new_event['Impact Value']
             )
-
+            return new_event['Description']
+        return None
 
 def apply_impact(player_resources, impact_type, impact_value):
     """
@@ -643,8 +645,9 @@ def apply_impact(player_resources, impact_type, impact_value):
     # Mapping from event impact types to player resource keys
     impact_type_map = {
         'electricity supply reduction': 'Electricity',
-        'money reduction': 'Money',
+        'an income reduction': 'Money',
         'water supply reduction': 'Water',
+
     }
 
     adjusted_impact_type = impact_type_map.get(impact_type, None)
@@ -871,6 +874,7 @@ def main():
     while True:
         grid, total_daily_income, player_resources, metrics, events, current_day = start_new_game()
         game_over = False
+        last_event = None
         while current_day <= 30 and not game_over:
             clear_screen()
             print("McGee Metropolis City Map:")
@@ -882,7 +886,7 @@ def main():
             print_metrics(metrics)
 
             print(f"Day {current_day}: Good Morning! A New day has started...")
-            apply_random_event(events, player_resources)
+            last_event = apply_random_event(events, player_resources, last_event)
             regenerate_resources(player_resources, total_daily_income)
             if not check_metrics(metrics):
                 print(
@@ -909,6 +913,7 @@ def main():
                 if confirm_restart():  # Confirm restart decision
                     print("Restarting the game.")
                     grid, total_daily_income, player_resources, metrics, events, current_day = start_new_game(reset_resources=True)
+                    last_event = None
                     continue
             elif action == 'help':
                 print_help()
