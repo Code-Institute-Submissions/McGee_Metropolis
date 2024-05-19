@@ -22,6 +22,7 @@ ZONE_SYMBOLS = {
     'Residential': '🟢',  # Residential
     'Commercial': '🟣',  # Commercial
     'Industrial': '🟤',  # Industrial
+
     'School': '🟡',  # School
     'Hospital': '🔴',  # Hospital
     '-': '⚪'  # Empty space
@@ -425,7 +426,7 @@ def fetch_player_resources():
                 if isinstance(current_value, str) and ',' in current_value:
                     current_value = int(current_value.replace(',', ''))
                 else:
-                    current_value = int(current_value)
+                    current_value = int(float(current_value))
             except ValueError:
                 print(f"Invalid value for {resource_type}: {current_value}")
                 current_value = 0
@@ -603,7 +604,7 @@ def apply_random_event(events, player_resources):
                 f"Oh no, an event is impacting the city:"
                 f"{event['Description']} "
                 f"resulting in {event['Impact Type']}"
-                f"of {event['Impact Value']}. "
+                f" of {event['Impact Value']}. "
                 f"Days left: {event['Duration']}"
             )
             apply_impact(
@@ -900,21 +901,22 @@ def main():
                 current_day += 1  # Increment the day counter
             elif action == 'restart':
                 if confirm_restart():  # Confirm restart decision
+                    reset_resources_to_default()
                     print("Restarting the game.")
                     break
             elif action == 'help':
                 print_help()
             elif action == 'exit':
                 if confirm_exit():
-                    show_goodbye_message()
-                    reset_resources_to_default()  # Reset resources on exit
-                    break
+                    if show_goodbye_message():
+                        reset_resources_to_default()  # Reset resources on exit
+                        break
             else:
                 print("Invalid. Choose 'zone', 'next', 'restart', 'help', or 'exit'.")
 
             update_resources_in_sheet(player_resources)
         if game_over or current_day > 30:
-            if current_day > 30:
+            if current_day > 30 and not game_over:
                 if (player_resources['Money']['Current Value'] >= monetary_goal and
                     all(metrics[m] >= min_metrics[m] for m, _ in min_metrics.items())):
                     print("Congratulations! You have reached your goals and won!")
