@@ -420,12 +420,12 @@ def fetch_player_resources():
             current_value = res['Current Value']
             regeneration_rate = res.get('Regeneration Rate', 0)
 
-            # Convert current_value to int, handling floats and strings
+            # Convert current_value to float, handling strings with commas
             try:
                 current_value = float(str(current_value).replace(',', ''))
             except ValueError:
                 print(f"Invalid value for {resource_type}: {current_value}")
-                current_value = 0
+                current_value = 0.0
             # Convert to float or default to 0.0 if empty
             try:
                 regeneration_rate = float(regeneration_rate)
@@ -468,17 +468,19 @@ def reset_resources_to_default():
     try:
         resources_sheet = SHEET.worksheet('resources')
         default_resources = {
-            'Money': 10000,
-            'Population': 200,
-            'Electricity': 500,
-            'Water': 500
+            'Money': (10000, 0.0),
+            'Population': (200, 0.0),
+            'Electricity': (500, 0.0),
+            'Water': (500, 0.0)
         }
         # Iterate over the default_resources dictionary and update the sheet
-        for resource, value in default_resources.items():
+        for resource, values in default_resources.items():
+            current_value, regeneration_rate = values
             # Find the cell with the resource type
             cell = resources_sheet.find(resource)
             # Update the resource value to default
-            resources_sheet.update_cell(cell.row, cell.col + 1, value)
+            resources_sheet.update_cell(cell.row, cell.col + 1, current_value)
+            resources_sheet.update_cell(cell.row, cell.col + 2, regeneration_rate)
         print("Resources have been reset to default values.")
     except GSpreadException as e:
         print(f"Google Sheets error resetting resources: {e}")
@@ -517,7 +519,7 @@ def print_resources(resources):
     print(Colour.BLUE + "Resources:" + Colour.ENDC)
     print(header)
     for key, value in resources.items():
-        print(f"{key:<15} {value['Current Value']:10} "
+        print(f"{key:<15} {value['Current Value']:10.2f} "
               f"{value['Regeneration Rate']:15.2f}")
     print()
 
@@ -793,6 +795,30 @@ def confirm_restart():
     return response.lower() == 'yes'
 
 
+def start_new_game(reset_resources=True):
+    """
+    Initialises a new game state.
+    Args:
+        reset_resources (bool): Whether to reset resources to default values.
+    Returns:
+        tuple: grid, total_daily_income, player_resources, metrics, events, current_day
+    """
+    if reset_resources:
+        reset_resources_to_default()  # Reset resources when starting a new game
+    
+    zone_data = fetch_zone_data()
+    events = fetch_events()
+    player_resources = fetch_player_resources()
+    metrics = fetch_metrics()
+    current_day = 1  # Start the day counter
+    if zone_data:
+        grid, total_daily_income = initialize_random_grid(GRID_SIZE, zone_data)
+    else:
+        # If fetching fails, fallback to an empty grid
+        grid, total_daily_income = initialize_grid(GRID_SIZE), 0
+    return grid, total_daily_income, player_resources, metrics, events, current_day
+
+
 def confirm_exit():
     """
     Confirm before exiting the game.
@@ -807,47 +833,31 @@ def confirm_exit():
     return confirm == 'yes'
 
 
+def show_goodbye_message():
+    """
+    Display a goodbye message and prompt the player to play again.
+    """
+    print(Colour.GREEN + "Thank you for playing McGee Metropolis!" + Colour.ENDC)
+    while True:
+        choice = input(
+            Colour.BOLD + "\nWould you like to play again? (yes/no): " + Colour.ENDC
+            ).strip().lower()
+        if choice == 'yes':
+            clear_screen()
+            return True
+        elif choice == 'no':
+            print(Colour.GREEN + "Goodbye! Hope to see you again!" + Colour.ENDC)
+            exit()
+        else:
+            print("Invalid input. Please type 'yes' or 'no'.")
+
+
 def main():
     """
     Main function to run the game.
 
     Initialises the game, handles the main game loop, and manages game state.
     """
-    def start_new_game():
-        """
-        Initialises a new game state.
-        Returns:
-            tuple: grid, total_daily_income, player_resources, metrics, events, current_day
-        """
-        zone_data = fetch_zone_data()
-        events = fetch_events()
-        player_resources = fetch_player_resources()
-        metrics = fetch_metrics()
-        current_day = 1  # Start the day counter
-        if zone_data:
-            grid, total_daily_income = initialize_random_grid(GRID_SIZE, zone_data)
-        else:
-            # If fetching fails, fallback to an empty grid
-            grid, total_daily_income = initialize_grid(GRID_SIZE), 0
-        return grid, total_daily_income, player_resources, metrics, events, current_day
-
-    def show_goodbye_message():
-        """
-        Display a goodbye message and prompt the player to play again.
-        """
-        print(Colour.GREEN + "Thank you for playing McGee Metropolis!" + Colour.ENDC)
-        while True:
-            choice = input(
-                Colour.BOLD + "\nWould you like to play again? (yes/no): " + Colour.ENDC
-            ).strip().lower()
-            if choice == 'yes':
-                clear_screen()
-                return True
-            elif choice == 'no':
-                print(Colour.GREEN + "Goodbye! Hope to see you again!" + Colour.ENDC)
-                exit()
-            else:
-                print("Invalid input. Please type 'yes' or 'no'.")
 
     show_intro()  # Show introduction and instructions at the start
     monetary_goal = 200000
@@ -897,9 +907,9 @@ def main():
                 current_day += 1  # Increment the day counter
             elif action == 'restart':
                 if confirm_restart():  # Confirm restart decision
-                    reset_resources_to_default()
                     print("Restarting the game.")
-                    break
+                    grid, total_daily_income, player_resources, metrics, events, current_day = start_new_game(reset_resources=True)
+                    continue
             elif action == 'help':
                 print_help()
             elif action == 'exit':
@@ -926,7 +936,7 @@ def main():
                 else:
                     break
 
-    show_intro()  # Show introduction and instructions again if exiting the game
+    show_intro()  # Show introduction and instructions
 
 
 if __name__ == "__main__":
