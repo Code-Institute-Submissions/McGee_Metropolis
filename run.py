@@ -470,8 +470,8 @@ def reset_resources_to_default():
         default_resources = {
             'Money': (10000, 0.0),
             'Population': (200, 0.0),
-            'Electricity': (500, 0.0),
-            'Water': (500, 0.0)
+            'Electricity': (500, 5.0),  # Set regeneration rate for Electricity
+            'Water': (500, 5.0)  # Set regeneration rate for Water
         }
         # Iterate over the default_resources dictionary and update the sheet
         for resource, values in default_resources.items():
