@@ -560,7 +560,7 @@ def handle_zone_action(grid, player_resources, metrics):
                 if zone_input in zone_map:
                     zone_type = zone_map[zone_input]
                     place_zone(grid, zone_type, x, y, player_resources, metrics)
-                    break
+                    return True  # Zone successfully placed
                 else:
                     print("Invalid. Please use 'R', 'C', 'I', 'S', or 'H'")
             else:
@@ -901,7 +901,8 @@ def main():
                     "\n5. Exit the game: (zone/next/help/restart/exit):  "
                 ).lower()
                 if action == 'zone':
-                    handle_zone_action(grid, player_resources, metrics)
+                    if handle_zone_action(grid, player_resources, metrics):
+                        zones_built_today += 1
                     print_grid(grid)
                 elif action == 'next':
                     current_day += 1  # Increment the day counter
