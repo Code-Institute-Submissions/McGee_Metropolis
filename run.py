@@ -845,8 +845,7 @@ def main():
             ).strip().lower()
             if choice == 'yes':
                 clear_screen()
-                show_intro()
-                break
+                return True
             elif choice == 'no':
                 print(Colour.GREEN + "Goodbye! Hope to see you again!" + Colour.ENDC)
                 exit()
@@ -909,25 +908,23 @@ def main():
                 if confirm_exit():
                     show_goodbye_message()
                     reset_resources_to_default()  # Reset resources on exit
-                    return
+                    break
             else:
                 print("Invalid. Choose 'zone', 'next', 'restart', 'help', or 'exit'.")
 
             update_resources_in_sheet(player_resources)
-        if game_over:
-            if not confirm_restart():
-                print("Exiting the game.")
-                break
-        elif current_day > 30:
-            if (player_resources['Money']['Current Value'] >= monetary_goal and
-                all(metrics[m] >= min_metrics[m] for m, _ in min_metrics.items())):
-                print("Congratulations! You have reached your goals and won!")
-            else:
-                print("Unfortunately, you did not meet the goals. Game over.")
-            if not confirm_restart():
-                print("Exiting the game.")
-                show_goodbye_message()
-                break
+        if game_over or current_day > 30:
+            if current_day > 30:
+                if (player_resources['Money']['Current Value'] >= monetary_goal and
+                    all(metrics[m] >= min_metrics[m] for m, _ in min_metrics.items())):
+                    print("Congratulations! You have reached your goals and won!")
+                else:
+                    print("Unfortunately, you did not meet the goals. Game over.")
+            if not confirm_restart() or game_over:
+                if show_goodbye_message():
+                    continue
+                else:
+                    break
 
     show_intro()  # Show introduction and instructions again if exiting the game
 
