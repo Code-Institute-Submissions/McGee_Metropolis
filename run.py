@@ -343,8 +343,8 @@ def place_zone(grid, zone_type, x, y, player_resources, metrics):
                 f"Congratulations, you built a {zone_type} & placed it at"
                 f"{x}, {y}."
             )
-            print(f"Remaining Money: {player_resources['Money']['Current Value']}")
-            update_metrics(metrics, player_resources, zone_type, 1)
+            print(f"Remaining Money: {player_resources['Money']}")
+            update_metrics(metrics, zone_type, 1)
         else:
             print("This plot is already occupied, please choose another plot")
     else:
@@ -719,7 +719,7 @@ def check_metrics(metrics):
     return True
 
 
-def update_metrics(metrics, zone_type, amount, player_resources):
+def update_metrics(metrics, zone_type, amount):
     """
     Update the metrics based on the type and amount of zone built.
 
@@ -730,20 +730,19 @@ def update_metrics(metrics, zone_type, amount, player_resources):
         amount (int): The number of zones built.
     """
     if zone_type == 'Commercial':
-        player_resources['Money']['Current Value'] *= 1.05  # Increase money by 5%
-        metrics['Employment Rate'] += amount * 2  # Increase employment rate by 2%
-        metrics['Happiness Index'] -= amount * 1  # Decrease happiness index by 1%
-    elif zone_type == 'Residential':
-        metrics['Employment Rate'] -= amount * 5  # Decrease employment rate by 5%
+        metrics['Employment Rate'] += amount * 2  # Increase by 2%
+        metrics['Money'] += amount * 5  # Increase by 5%
+        metrics['Happiness Index'] -= amount * 1  # Decrease by 1%
     elif zone_type == 'Industrial':
-        metrics['Happiness Index'] -= amount * 1  # Decrease happiness index by 1%
-        metrics['Health'] -= amount * 1  # Decrease health by 1%
-    elif zone_type == 'Hospital':
-        metrics['Health'] += amount * 5  # Increase health by 5%
+        metrics['Happiness Index'] -= amount * 1  # Decrease by 1%
+        metrics['Health'] -= amount * 1  # Decrease by 1%
+    elif zone_type == 'Residential':
+        metrics['Employment Rate'] -= amount * 5  # Decrease by 5%
     elif zone_type == 'School':
-        metrics['Employment Rate'] += amount * 2  # Increase employment rate by 2%
-        metrics['Happiness Index'] += amount * 1  # Increase happiness index by 1%
-
+        metrics['Employment Rate'] += amount * 2  # Increase by 2%
+        metrics['Happiness Index'] += amount * 1  # Increase by 1%
+    elif zone_type == 'Hospital':
+        metrics['Health'] += amount * 5  # Increase by 5%
 
     # Ensure metrics don't go out of bounds
     metrics['Employment Rate'] = min(max(metrics['Employment Rate'], 0), 100)
