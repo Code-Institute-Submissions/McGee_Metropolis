@@ -913,8 +913,10 @@ def main():
             update_resources_in_sheet(player_resources)
         if game_over or current_day > 30:
             if current_day > 30 and not game_over:
-                if (player_resources['Money']['Current Value'] >= monetary_goal and
-                    all(metrics[m] >= min_metrics[m] for m, _ in min_metrics.items())):
+                if (
+                    player_resources['Money']['Current Value'] >= monetary_goal and
+                    all(metrics[m] >= min_metrics[m] for m in min_metrics)
+                ):
                     print("Congratulations! You have reached your goals and won!")
                 else:
                     print("Unfortunately, you did not meet the goals. Game over.")
