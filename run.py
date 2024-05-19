@@ -833,6 +833,26 @@ def main():
             grid, total_daily_income = initialize_grid(GRID_SIZE), 0
         return grid, total_daily_income, player_resources, metrics, events, current_day
 
+
+    def show_goodbye_message():
+        """
+        Display a goodbye message and prompt the player to play again.
+        """
+        print(Colour.GREEN + "Thank you for playing McGee Metropolis!" + Colour.ENDC)
+        while True:
+            choice = input(
+                Colour.BOLD + "\nWould you like to play again? (yes/no): " + Colour.ENDC
+            ).strip().lower()
+            if choice == 'yes':
+                clear_screen()
+                show_intro()
+                break
+            elif choice == 'no':
+                print(Colour.GREEN + "Goodbye! Hope to see you again!" + Colour.ENDC)
+                exit()
+            else:
+                print("Invalid input. Please type 'yes' or 'no'.")
+
     show_intro()  # Show introduction and instructions at the start
     monetary_goal = 200000
     # Minimum / maximum acceptable metric values
@@ -887,7 +907,7 @@ def main():
                 print_help()
             elif action == 'exit':
                 if confirm_exit():
-                    print("Exiting the game.")
+                    show_goodbye_message()
                     reset_resources_to_default()  # Reset resources on exit
                     return
             else:
@@ -906,6 +926,7 @@ def main():
                 print("Unfortunately, you did not meet the goals. Game over.")
             if not confirm_restart():
                 print("Exiting the game.")
+                show_goodbye_message()
                 break
 
     show_intro()  # Show introduction and instructions again if exiting the game
