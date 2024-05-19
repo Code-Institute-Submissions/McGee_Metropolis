@@ -313,7 +313,7 @@ def initialize_random_grid(size, zone_data):
     return grid, total_daily_income
 
 
-def place_zone(grid, zone_type, x, y, player_resources):
+def place_zone(grid, zone_type, x, y, player_resources, metrics):
     """
     Place a zone on the grid at the specified coordinates if enough resources
     are available.
@@ -325,6 +325,7 @@ def place_zone(grid, zone_type, x, y, player_resources):
         y (int): The y-coordinate.
         player_resources (dict): A dictionary containing the player's
         resources.
+        metrics (dict): A dictionary containing the current metrics.
     """
     # Costs of resources
     zone_costs = {
@@ -342,7 +343,8 @@ def place_zone(grid, zone_type, x, y, player_resources):
                 f"Congratulations, you built a {zone_type} & placed it at"
                 f"{x}, {y}."
             )
-            print(f"Remaining Money: {player_resources['Money']}")
+            print(f"Remaining Money: {player_resources['Money']['Current Value']}")
+            update_metrics(metrics, player_resources, zone_type, 1)
         else:
             print("This plot is already occupied, please choose another plot")
     else:
@@ -521,13 +523,14 @@ def print_resources(resources):
     print()
 
 
-def handle_zone_action(grid, player_resources):
+def handle_zone_action(grid, player_resources, metrics):
     """
     Handle the action of placing a zone and check resources.
 
     Args:
         grid (list): The game grid.
         player_resources (dict): A dictionary containing the player resources.
+        metrics (dict): A dictionary containing the current metrics.
     """
     clear_screen()
     while True:
@@ -554,7 +557,7 @@ def handle_zone_action(grid, player_resources):
 
                 if zone_input in zone_map:
                     zone_type = zone_map[zone_input]
-                    place_zone(grid, zone_type, x, y, player_resources)
+                    place_zone(grid, zone_type, x, y, player_resources, metrics)
                     break
                 else:
                     print("Invalid. Please use 'R', 'C', 'I', 'S', or 'H'")
@@ -716,24 +719,31 @@ def check_metrics(metrics):
     return True
 
 
-def update_metrics(metrics, zone_type, amount):
+def update_metrics(metrics, zone_type, amount, player_resources):
     """
     Update the metrics based on the type and amount of zone built.
 
     Args:
         metrics (dict): A dictionary containing the current metrics.
+        player_resources (dict): A dictionary containing the player resources.
         zone_type (str): The type of zone built.
         amount (int): The number of zones built.
     """
-    if zone_type == 'Commercial' or zone_type == 'Industrial':
-        metrics['Employment Rate'] += amount * 0.5
+    if zone_type == 'Commercial':
+        player_resources['Money']['Current Value'] *= 1.05  # Increase money by 5%
+        metrics['Employment Rate'] += amount * 2  # Increase employment rate by 2%
+        metrics['Happiness Index'] -= amount * 1  # Decrease happiness index by 1%
     elif zone_type == 'Residential':
-        metrics['Employment Rate'] -= amount * 0.3
-        metrics['Crime Rate'] += amount * 0.2
-    elif zone_type == 'School':
-        metrics['Happiness Index'] += amount * 1
+        metrics['Employment Rate'] -= amount * 5  # Decrease employment rate by 5%
+    elif zone_type == 'Industrial':
+        metrics['Happiness Index'] -= amount * 1  # Decrease happiness index by 1%
+        metrics['Health'] -= amount * 1  # Decrease health by 1%
     elif zone_type == 'Hospital':
-        metrics['Health'] += amount * 1.5
+        metrics['Health'] += amount * 5  # Increase health by 5%
+    elif zone_type == 'School':
+        metrics['Employment Rate'] += amount * 2  # Increase employment rate by 2%
+        metrics['Happiness Index'] += amount * 1  # Increase happiness index by 1%
+
 
     # Ensure metrics don't go out of bounds
     metrics['Employment Rate'] = min(max(metrics['Employment Rate'], 0), 100)
@@ -889,7 +899,7 @@ def main():
                 "\n5. Exit the game: (zone/next/help/restart/exit):  "
             ).lower()
             if action == 'zone':
-                handle_zone_action(grid, player_resources)
+                handle_zone_action(grid, player_resources, metrics)
                 print_grid(grid)
             elif action == 'next':
                 current_day += 1  # Increment the day counter
