@@ -88,12 +88,11 @@ def show_intro():
     aim = """
     Aim of the Game:
     You are being challenged to build and manage a thriving city.
-    Build zones, manage your money, population, electricity and water.
+    Build zones, manage your money, electricity and water.
     Your goal is to reach 200000 in money within 30 days whilst
     maintaining the Employment Rate, Crime Rate, Happiness Index, & Health.
     Every move has an impact on your resources & metrics, so plan carefully.
-    EG. If you build a residential zone, your population will increase,
-    but your employment rate will decrease.
+    EG. If you build a residential zone your employment rate will decrease.
     """
 
     print(Colour.GREEN + logo + Colour.ENDC)
@@ -150,7 +149,7 @@ def show_instructions():
     # Zone Details
     zone_details = """
      Zone Details:
-    - Residential 🟢: Cost to build: 1250, income generated 50 per day
+    - Residential 🟢: Cost to build: 1250, income generated 250 per day
     - Commercial 🟣: Cost to build: 450, income generated 100 per day
     - Industrial 🟤: Cost to build: 450, income generated 75 per day
     - School 🟡: Cost to build: 100, income generated 20 per day
@@ -200,8 +199,7 @@ def show_tips():
 
     1. Building any zone will increase your daily income.
 
-    2. If you are building a residential zone,
-    your population will increase but your employment rate will decrease.
+    2. If you are building a residential zone your employment rate will decrease.
 
     3. If you build a commercial zone your employment rate will increase,
     but your happiness index will decrease.
@@ -469,7 +467,6 @@ def reset_resources_to_default():
         resources_sheet = SHEET.worksheet('resources')
         default_resources = {
             'Money': (10000, 0.0),
-            'Population': (200, 0.0),
             'Electricity': (500, 5.0),  # Set regeneration rate for Electricity
             'Water': (500, 5.0)  # Set regeneration rate for Water
         }
