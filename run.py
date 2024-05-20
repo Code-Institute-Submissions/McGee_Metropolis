@@ -561,14 +561,21 @@ def fetch_events():
     Returns:
         list: A list of dictionaries containing event data.
     """
-    events_sheet = SHEET.worksheet('events')
-    events = events_sheet.get_all_records()
-    # Initialise all events as inactive with specified duration
-    for event in events:
-        event['Active'] = False
-        event['Duration'] = int(event.get('Duration', 0))
-    print("Events fetched:", events)  # Debugging statement
-    return events
+    try:
+        events_sheet = SHEET.worksheet('events')
+        events = events_sheet.get_all_records()
+        # Initialise all events as inactive with specified duration
+        for event in events:
+            event['Active'] = False
+            try:
+                event['Duration'] = int(event.get('Duration', 0))
+            except ValueError:
+                print(f"Invalid duration {event.get('Description', '')}.")
+                event['Duration'] = 0
+        return events
+    except GSpreadException as e:
+        print(f"Google Sheets error fetching events: {e}")
+        return []
 
 
 def apply_random_event(events, player_resources, last_event=None):
@@ -763,18 +770,15 @@ def print_help():
     - Your goal is to reach 2,000,000 in money within 30 days.
     - You can build a maximum of 3 zones per day.
     - Each zone type has a different cost and daily income generation.
-
     Metric Limits:
     - Employment Rate: Should not fall below 50%.
     - Crime Rate: Should not exceed 30%.
     - Happiness Index: Should not fall below 50%.
     - Health: Should not fall below 50%.
-
     Resources:
     - Money: Used to build zones and is increased by daily income.
     - Electricity: Consumed by the city and regenerated daily.
     - Water: Consumed by the city and regenerated daily.
-
     Zone Details:
     - Residential 🟢: Cost to build: 1250, income generated 250 per day.
       Impact: Decreases Employment Rate by 5%.
@@ -787,13 +791,11 @@ def print_help():
       Impact: Increases Employment Rate by 2%, Happiness by 1%.
     - Hospital 🔴: Cost to build: 100, income generated 30 per day.
       Impact: Increases Health by 5%.
-
     Random Events:
     - Events can impact your resources (e.g., reducing electricity or water
     supply, or decreasing income).
     - Event impacts last for a specified duration and can significantly
     affect your city's metrics.
-
     Press Enter to continue...
     """
     print(help_text)
@@ -881,7 +883,6 @@ def main():
     Main function to run the game.
     Initialises the game, handles the main game loop, and manages game state.
     """
-
     show_intro()  # Show introduction and instructions at the start
     monetary_goal = 2000000
     # Minimum / maximum acceptable metric values
@@ -918,7 +919,6 @@ def main():
                 )
                 game_over = True
                 continue
-
             if zones_built_today < MAX_ZONES_PER_DAY:
                 action = input(
                     "\nChoose the action you would like to take:"
