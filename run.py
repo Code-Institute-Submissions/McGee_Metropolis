@@ -340,7 +340,7 @@ def print_grid(grid):
         grid (list): The game grid.
     """
     cell_width = 4
-    print("      0   1   2   3   4   5   6   7   8   9")
+    print("      0    1    2    3    4    5    6    7    8    9")
     for index, row in enumerate(grid):
         # Print each row with a numerical label
         row_str = (
