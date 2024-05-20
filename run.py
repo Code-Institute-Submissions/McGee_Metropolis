@@ -773,13 +773,53 @@ def print_metrics(metrics):
 
 def print_help():
     """
-    Print the help message displaying available commands.
+    Print the help message displaying available commands and game details.
     """
-    print("Commands available:")
-    print("  build - Place a new zone.")
-    print("  next - Move to the next day.")
-    print("  restart - Restart the game.")
-    print("  help - Show this help message.")
+    help_text = """
+    Commands available:
+      build - Place a new zone.
+      next - Move to the next day.
+      restart - Restart the game.
+      help - Show this help message.
+      exit - Exit the game.
+
+    Game Rules:
+    - You have 30 days to build and manage your city.
+    - Your goal is to reach 2,000,000 in money within 30 days.
+    - You can build a maximum of 3 zones per day.
+    - Each zone type has a different cost and daily income generation.
+
+    Metric Limits:
+    - Employment Rate: Should not fall below 50%.
+    - Crime Rate: Should not exceed 30%.
+    - Happiness Index: Should not fall below 50%.
+    - Health: Should not fall below 50%.
+
+    Resources:
+    - Money: Used to build zones and is increased by daily income.
+    - Electricity: Consumed by the city and regenerated daily.
+    - Water: Consumed by the city and regenerated daily.
+
+    Zone Details:
+    - Residential 🟢: Cost to build: 1250, income generated 250 per day.
+      Impact: Decreases Employment Rate by 5%.
+    - Commercial 🟣: Cost to build: 450, income generated 100 per day.
+      Impact: Increases Money by 5%, Employment Rate by 2%, decreases Happiness by 1%.
+    - Industrial 🟤: Cost to build: 450, income generated 75 per day.
+      Impact: Decreases Happiness by 1%, Health by 1%.
+    - School 🟡: Cost to build: 100, income generated 20 per day.
+      Impact: Increases Employment Rate by 2%, Happiness by 1%.
+    - Hospital 🔴: Cost to build: 100, income generated 30 per day.
+      Impact: Increases Health by 5%.
+
+    Random Events:
+    - Events can impact your resources (e.g., reducing electricity or water supply, or decreasing income).
+    - Event impacts last for a specified duration and can significantly affect your city's metrics.
+
+    Press Enter to continue...
+    """
+    print(help_text)
+    input()  # Pause and wait for user input to continue
 
 
 def confirm_restart():
