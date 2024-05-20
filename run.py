@@ -1,12 +1,10 @@
 """
 McGee Metropolis: A city-building game.
-
 This contains the implementation of McGee Metropolis, a game where
 players build and manage a city, balancing resources and metrics to achieve
 goals within a set number of days. The game uses Google Sheets to store and
 retrieve data for game state and resources.
 """
-
 import random
 import os
 import platform
@@ -16,7 +14,6 @@ from google.oauth2.service_account import Credentials
 from gspread.exceptions import GSpreadException
 
 # Constants
-
 GRID_SIZE = 10
 ZONE_SYMBOLS = {
     'Residential': '🟢',  # Residential
@@ -35,7 +32,6 @@ MAX_ZONES_PER_DAY = 3  # Maximum number of zones that can be built in a day
 class Colour:
     """
     ANSI colour codes for coloured console output.
-
     This class provides constants for various ANSI colour codes that can be
     used to format text output in the console with different colurs and styles.
     """
@@ -96,16 +92,13 @@ def show_intro():
     Every move has an impact on your resources & metrics, so plan carefully.
     EG. If you build a residential zone your employment rate will decrease.
     """
-
     print(Colour.GREEN + logo + Colour.ENDC)
     for char in welcome_message:
         print(Colour.BLUE + char, end='', flush=True)
         time.sleep(0.05)
-
     for char in aim:
         print(Colour.GREEN + char, end='', flush=True)
         time.sleep(0.02)
-
     while True:
         choice = input(
             Colour.BOLD +
@@ -136,16 +129,11 @@ def show_instructions():
     instructions = """
     Game Instructions:
     1. You will start with a grid representing your city.
-
     2. You will also be allocated resources.
-
     3. Every decision impacts the city just like in real life.
-
     4. Manage your resources wisely to reach the monetary goal
     and keep your metrics balanced.
-
     5. Random events will impact your city each day.
-
     6. Tables will update you each day with your current metrics and resources.
     """
 
@@ -165,7 +153,6 @@ def show_instructions():
     for char in zone_details:
         print(Colour.GREEN + char, end='', flush=True)
         time.sleep(0.02)
-
     while True:
         choice = input(
             Colour.BOLD +
@@ -205,28 +192,21 @@ def show_tips():
     Health: 50
 
     1. Building any zone will increase your daily income, max 3 built per day.
-
     2. If you are building a residential zone your employment rate
     will decrease.
-
     3. If you build a commercial zone your employment rate will increase,
     but your happiness index will decrease.
-
     4. If you build an industrial zone your happiness index
     and your citizens health will both decrease.
-
     5. Building a hospital will boost your citizens health
-
     6. Building a school will increase your employment rate
     and boost your happiness index.
-
     7. Water and electricity regenerate at a rate of 5 per day.
     """
 
     for char in metrics_tips:
         print(Colour.GREEN + char, end='', flush=True)
         time.sleep(0.02)
-
     while True:
         choice = input(
             Colour.BOLD +
@@ -246,7 +226,6 @@ def show_tips():
 def fetch_zone_data():
     """
     Fetch the data of each zone type from Google Sheets.
-
     Returns:
     dict: A dictionary with zone types as keys and a dictionary of count
     and income as values.
@@ -283,10 +262,8 @@ def fetch_zone_data():
 def initialize_grid(size):
     """
     Initialise an empty game grid with the specified size.
-
     Args:
         size (int): The size of the grid.
-
     Returns:
         list: A 2D list representing the empty game grid.
     """
@@ -296,11 +273,9 @@ def initialize_grid(size):
 def initialize_random_grid(size, zone_data):
     """
     Initialise the game grid with random zones based on fetched counts.
-
     Args:
         size (int): The size of the grid.
         zone_data (dict): A dictionary containing zone types and their data.
-
     Returns:
         tuple: A tuple containing the initialied grid and the total daily
         income.
@@ -308,7 +283,6 @@ def initialize_random_grid(size, zone_data):
     grid = [['-' for _ in range(size)] for _ in range(size)]
     positions = [(x, y) for x in range(size) for y in range(size)]
     random.shuffle(positions)  # Shuffle positions for random placement
-
     total_daily_income = 0
     for zone_type, data in zone_data.items():
         count = data['count']
@@ -317,7 +291,6 @@ def initialize_random_grid(size, zone_data):
             x, y = positions.pop()
             grid[x][y] = zone_type
             total_daily_income += income
-
     return grid, total_daily_income
 
 
@@ -325,7 +298,6 @@ def place_zone(grid, zone_type, x, y, player_resources, metrics):
     """
     Place a zone on the grid at the specified coordinates if enough resources
     are available.
-
     Args:
         grid (list): The game grid.
         zone_type (str): The type of zone to place.
@@ -364,12 +336,10 @@ def print_grid(grid):
     Print the grid to the console with boxed borders and consistent alignment.
     Also prints a key to help players understand the symbols used for
     different zones.
-
     Args:
         grid (list): The game grid.
     """
     cell_width = 4
-
     print("      0   1   2   3   4   5   6   7   8   9")
     for index, row in enumerate(grid):
         # Print each row with a numerical label
@@ -382,7 +352,6 @@ def print_grid(grid):
             "|"
         )
         print(row_str)
-
     print()  # Ensure there's a new line after the grid for better spacing
     # Print the key
     key = """
@@ -415,7 +384,6 @@ def fetch_player_resources():
     """
     Fetch player resources from the 'resources' worksheet
     and return as a dictionary.
-
     Returns:
         dict: A dictionary containing player resources.
     """
@@ -427,7 +395,6 @@ def fetch_player_resources():
             resource_type = res['Resource Type']
             current_value = res['Current Value']
             regeneration_rate = res.get('Regeneration Rate', 0)
-
             # Convert current_value to float, handling strings with commas
             try:
                 current_value = float(str(current_value).replace(',', ''))
@@ -438,10 +405,8 @@ def fetch_player_resources():
             try:
                 regeneration_rate = float(regeneration_rate)
             except ValueError:
-                f"Invalid regeneration rate for {resource_type}: "
-                f"{regeneration_rate}"
+                print(f"Invalid rate for {resource_type}: {regeneration_rate}")
                 regeneration_rate = 0.0
-
             player_resources[resource_type] = {
                 'Current Value': current_value,
                 'Regeneration Rate': regeneration_rate
@@ -454,7 +419,6 @@ def fetch_player_resources():
 def update_resources_in_sheet(player_resources):
     """
     Update the resources back to Google Sheets.
-
     Args:
         player_resources (dict):
         A dictionary containing the player's resources.
@@ -508,7 +472,6 @@ def reset_resources_to_default():
 def regenerate_resources(player_resources, total_daily_income):
     """
     Regenerate resources daily and add daily income.
-
     Args:
         player_resources (dict): A dictionary containing the player resources.
         total_daily_income (float): The total daily income generated by zones.
@@ -526,7 +489,6 @@ def regenerate_resources(player_resources, total_daily_income):
 def print_resources(resources):
     """
     Print the player's resources in a formatted table.
-
     Args:
         resources (dict): A dictionary containing the player's resources.
     """
@@ -546,7 +508,6 @@ def print_resources(resources):
 def handle_zone_action(grid, player_resources, metrics):
     """
     Handle the action of placing a zone and check resources.
-
     Args:
         grid (list): The game grid.
         player_resources (dict): A dictionary containing the player resources.
@@ -559,13 +520,11 @@ def handle_zone_action(grid, player_resources, metrics):
                           f"(0-{GRID_SIZE-1}): "))
             y = int(input(f"Enter Y coordinate to build a zone "
                           f"(0-{GRID_SIZE-1}): "))
-
             if 0 <= x < GRID_SIZE and 0 <= y < GRID_SIZE:
                 zone_input = input(
                     "Enter zone type - R (Residential), C (Commercial),"
                     "I (Industrial), S (School), H (Hospital): "
                 ).upper()
-
                 # Map input to full names for internal logic
                 zone_map = {
                     'R': 'Residential',
@@ -574,7 +533,6 @@ def handle_zone_action(grid, player_resources, metrics):
                     'S': 'School',
                     'H': 'Hospital'
                 }
-
                 if zone_input in zone_map:
                     zone_type = zone_map[zone_input]
                     place_zone(
@@ -600,7 +558,6 @@ def handle_zone_action(grid, player_resources, metrics):
 def fetch_events():
     """
     Fetch event data from the Google Sheet.
-
     Returns:
         list: A list of dictionaries containing event data.
     """
@@ -618,7 +575,6 @@ def apply_random_event(events, player_resources, last_event=None):
     """
     Randomly select and apply an event effect if it's not currently active,
     and handle event duration.
-
     Args:
         events (list): A list of dictionaries containing event data.
         player_resources (dict): A dictionary containing the resources.
@@ -641,7 +597,6 @@ def apply_random_event(events, player_resources, last_event=None):
             event['Duration'] -= 1
         if event['Duration'] <= 0:
             event['Active'] = False
-
     if not any(event['Active'] for event in events):
         new_event = random.choice(
             [event for event in events if event['Description'] != last_event]
@@ -667,7 +622,6 @@ def apply_random_event(events, player_resources, last_event=None):
 def apply_impact(player_resources, impact_type, impact_value):
     """
     Apply the calculated impact to the player's resources.
-
     Args:
         player_resources (dict): A dictionary containing the player resources.
         impact_type (str): The type of impact.
@@ -681,18 +635,15 @@ def apply_impact(player_resources, impact_type, impact_value):
     }
 
     adjusted_impact_type = impact_type_map.get(impact_type, None)
-
     # Check if the mapping was successful
     if not adjusted_impact_type:
         return  # Exit if no valid mapping exists
-
     update_resource(player_resources, adjusted_impact_type, impact_value)
 
 
 def update_resource(player_resources, resource_type, impact_value):
     """
     Update a specific resource based on an impact value.
-
     Args:
         player_resources (dict): A dictionary containing the resources.
         resource_type (str): The type of resource to update.
@@ -708,7 +659,6 @@ def update_resource(player_resources, resource_type, impact_value):
 def fetch_metrics():
     """
     Fetch the initial metrics for the game.
-
     Returns:
         dict: A dictionary containing the initial metrics.
     """
@@ -723,10 +673,8 @@ def fetch_metrics():
 def check_metrics(metrics):
     """
     Check if any metrics have fallen below or above critical levels.
-
     Args:
         metrics (dict): A dictionary containing the current metrics.
-
     Returns:
         bool: True if all metrics are within acceptable levels, False if not.
     """
@@ -751,7 +699,6 @@ def check_metrics(metrics):
 def update_metrics(metrics, player_resources, zone_type, amount):
     """
     Update the metrics based on the type and amount of zone built.
-
     Args:
         metrics (dict): A dictionary containing the current metrics.
         player_resources (dict): A dictionary containing the player resources.
@@ -785,7 +732,6 @@ def update_metrics(metrics, player_resources, zone_type, amount):
 def print_metrics(metrics):
     """
     Print the current metrics in a formatted table.
-
     Args:
         metrics (dict): A dictionary containing the current metrics.
     """
@@ -857,7 +803,6 @@ def print_help():
 def confirm_restart():
     """
     Confirm the decision to restart the game.
-
     Returns:
         bool: True if the player confirms restart, False otherwise.
     """
@@ -899,7 +844,6 @@ def start_new_game(reset_resources=True):
 def confirm_exit():
     """
     Confirm before exiting the game.
-
     Returns:
         bool: True if the player confirms exit, False otherwise.
     """
@@ -935,7 +879,6 @@ def show_goodbye_message():
 def main():
     """
     Main function to run the game.
-
     Initialises the game, handles the main game loop, and manages game state.
     """
 
@@ -949,8 +892,8 @@ def main():
         'Health': 50
     }
     while True:
-        grid, total_daily_income, player_resources = start_new_game()
-        metrics, events, current_day = start_new_game()
+        (grid, total_daily_income, player_resources,
+         metrics, events, current_day) = start_new_game()
         game_over = False
         last_event = None
         zones_built_today = 0  # Track zones built in the current day
@@ -963,7 +906,6 @@ def main():
             print_resources(player_resources)
             # Function to print metrics in a formatted table
             print_metrics(metrics)
-
             print(f"Day {current_day}: Good Morning! A New day has started...")
             last_event = apply_random_event(
                 events, player_resources, last_event
@@ -997,7 +939,7 @@ def main():
                     if confirm_restart():  # Confirm restart decision
                         print("Restarting the game.")
                         (
-                            grid, total_daily_income, player_resources, 
+                            grid, total_daily_income, player_resources,
                             metrics, events, current_day
                         ) = start_new_game(reset_resources=True)
                         last_event = None
@@ -1011,11 +953,18 @@ def main():
                             reset_resources_to_default()
                             break
                 else:
-                    print("Invalid. Choose 'zone', 'next', 'restart', 'help', or 'exit'.")
-
+                    print(
+                        "Invalid. Choose 'zone', 'next', 'restart', "
+                        "'help', or 'exit'."
+                    )
             else:
-                print("You have reached the maximum number of zones you can build today.")
-                action = input("\nPress 'next' to move to the next day or 'exit' to exit the game: ").lower()
+                print(
+                    "You've reached the max number of zones built today."
+                )
+                action = input(
+                    "\nPress 'next' to move to the next day or 'exit' to "
+                    "exit the game: "
+                ).lower()
                 if action == 'next':
                     current_day += 1  # Increment the day counter
                     zones_built_today = 0  # Reset the counter for the new day
@@ -1025,23 +974,24 @@ def main():
                             # Reset resources on exit
                             reset_resources_to_default()
                             break
-
             update_resources_in_sheet(player_resources)
             if game_over or current_day > 30:
-                if current_day > 30 and not game_over:
-                    if (
-                        player_resources['Money']['Current Value'] >= monetary_goal and
-                        all(metrics[m] >= min_metrics[m] for m in min_metrics)
-                    ):
-                        print("Congratulations! You have reached your goals and won!")
-                    else:
-                        print("Unfortunately, you did not meet the goals. Game over.")
+                money_goal_met = (
+                    player_resources['Money']['Current Value'] >= monetary_goal
+                )
+                metrics_goal_met = all(
+                    value >= min_metrics[metric]
+                    for metric, value in metrics.items()
+                )
+                if money_goal_met and metrics_goal_met:
+                    print("Congratulations! You have won!")
+                else:
+                    print("Unfortunately, you have lost this time.")
                 if not confirm_restart() or game_over:
                     if show_goodbye_message():
                         continue
                     else:
                         break
-
     show_intro()  # Show introduction and instructions
 
 
