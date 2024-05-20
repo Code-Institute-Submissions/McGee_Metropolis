@@ -123,7 +123,8 @@ def show_intro():
             print("Exiting the game.")
             exit()
         else:
-            print("Invalid input. Please press Enter, type 'play', or type 'exit'.")
+            print("Invalid input. Please press Enter, "
+                  "type 'play', or type 'exit'.")
     clear_screen()
 
 
@@ -168,8 +169,10 @@ def show_instructions():
     while True:
         choice = input(
             Colour.BOLD +
-            "\nPress Enter to read the tips, 'play' to start the game, or 'exit' to exit: " +
-            Colour.ENDC).strip().lower()
+            "\nPress Enter to read the tips, 'play' to start the game, or " +
+            "'exit' to exit: " +
+            Colour.ENDC
+        ).strip().lower()
         if choice == '':
             clear_screen()
             show_tips()
@@ -181,7 +184,9 @@ def show_instructions():
             print("Exiting the game.")
             exit()
         else:
-            print("Invalid input. Please press Enter, type 'play', or type 'exit'.")
+            print(
+                "Invalid input. Please press Enter, type 'play', or 'exit'."
+            )
     clear_screen()
 
 
@@ -201,7 +206,8 @@ def show_tips():
 
     1. Building any zone will increase your daily income, max 3 built per day.
 
-    2. If you are building a residential zone your employment rate will decrease.
+    2. If you are building a residential zone your employment rate
+    will decrease.
 
     3. If you build a commercial zone your employment rate will increase,
     but your happiness index will decrease.
@@ -432,7 +438,8 @@ def fetch_player_resources():
             try:
                 regeneration_rate = float(regeneration_rate)
             except ValueError:
-                print(f"Invalid regeneration rate for {resource_type}: {regeneration_rate}")
+                f"Invalid regeneration rate for {resource_type}: "
+                f"{regeneration_rate}"
                 regeneration_rate = 0.0
 
             player_resources[resource_type] = {
@@ -458,8 +465,16 @@ def update_resources_in_sheet(player_resources):
             # Find the cell with the resource type
             cell = resources_sheet.find(resource_type)
             # Update the cell values
-            resources_sheet.update_cell(cell.row, cell.col + 1, values['Current Value'])
-            resources_sheet.update_cell(cell.row, cell.col + 2, values['Regeneration Rate'])
+            resources_sheet.update_cell(
+                cell.row,
+                cell.col + 1,
+                values['Current Value']
+            )
+            resources_sheet.update_cell(
+                cell.row,
+                cell.col + 2,
+                values['Regeneration Rate']
+            )
     except GSpreadException as e:
         print(f"Google Sheets error updating resources: {e}")
 
@@ -481,7 +496,10 @@ def reset_resources_to_default():
             cell = resources_sheet.find(resource)
             # Update the resource value to default
             resources_sheet.update_cell(cell.row, cell.col + 1, current_value)
-            resources_sheet.update_cell(cell.row, cell.col + 2, regeneration_rate)
+            resources_sheet.update_cell(
+                cell.row,
+                cell.col + 2,
+                regeneration_rate)
         print("Resources have been reset to default values.")
     except GSpreadException as e:
         print(f"Google Sheets error resetting resources: {e}")
@@ -559,7 +577,14 @@ def handle_zone_action(grid, player_resources, metrics):
 
                 if zone_input in zone_map:
                     zone_type = zone_map[zone_input]
-                    place_zone(grid, zone_type, x, y, player_resources, metrics)
+                    place_zone(
+                        grid,
+                        zone_type,
+                        x,
+                        y,
+                        player_resources,
+                        metrics
+                    )
                     return True  # Zone successfully placed
                 else:
                     print("Invalid. Please use 'R', 'C', 'I', 'S', or 'H'")
@@ -618,7 +643,9 @@ def apply_random_event(events, player_resources, last_event=None):
             event['Active'] = False
 
     if not any(event['Active'] for event in events):
-        new_event = random.choice([event for event in events if event['Description'] != last_event])
+        new_event = random.choice(
+            [event for event in events if event['Description'] != last_event]
+        )
         if not new_event['Active']:
             new_event['Active'] = True
             new_event['Duration'] = int(new_event.get('Duration', 1))
@@ -734,7 +761,9 @@ def update_metrics(metrics, player_resources, zone_type, amount):
     if zone_type == 'Residential':
         metrics['Employment Rate'] -= amount * 5  # Employment rate decreases
     elif zone_type == 'Commercial':
-        player_resources['Money']['Current Value'] += player_resources['Money']['Current Value'] * 0.05
+        player_resources['Money']['Current Value'] += (
+            player_resources['Money']['Current Value'] * 0.05
+        )
         metrics['Employment Rate'] += amount * 2  # Employment rate increases
         metrics['Happiness Index'] -= amount * 1  # Happiness decreases
     elif zone_type == 'Industrial':
@@ -804,7 +833,8 @@ def print_help():
     - Residential 🟢: Cost to build: 1250, income generated 250 per day.
       Impact: Decreases Employment Rate by 5%.
     - Commercial 🟣: Cost to build: 450, income generated 100 per day.
-      Impact: Increases Money by 5%, Employment Rate by 2%, decreases Happiness by 1%.
+      Impact: Increases Money by 5%, Employment Rate by 2%, decreases
+      Happiness by 1%.
     - Industrial 🟤: Cost to build: 450, income generated 75 per day.
       Impact: Decreases Happiness by 1%, Health by 1%.
     - School 🟡: Cost to build: 100, income generated 20 per day.
@@ -813,8 +843,10 @@ def print_help():
       Impact: Increases Health by 5%.
 
     Random Events:
-    - Events can impact your resources (e.g., reducing electricity or water supply, or decreasing income).
-    - Event impacts last for a specified duration and can significantly affect your city's metrics.
+    - Events can impact your resources (e.g., reducing electricity or water
+    supply, or decreasing income).
+    - Event impacts last for a specified duration and can significantly
+    affect your city's metrics.
 
     Press Enter to continue...
     """
@@ -839,10 +871,11 @@ def start_new_game(reset_resources=True):
     Args:
         reset_resources (bool): Whether to reset resources to default values.
     Returns:
-        tuple: grid, total_daily_income, player_resources, metrics, events, current_day
+        tuple: grid, total_daily_income, player_resources, metrics, events,
+        current_day
     """
     if reset_resources:
-        reset_resources_to_default()  # Reset resources when starting a new game
+        reset_resources_to_default()  # Reset resources for new game
     zone_data = fetch_zone_data()
     events = fetch_events()
     player_resources = fetch_player_resources()
@@ -853,7 +886,14 @@ def start_new_game(reset_resources=True):
     else:
         # If fetching fails, fallback to an empty grid
         grid, total_daily_income = initialize_grid(GRID_SIZE), 0
-    return grid, total_daily_income, player_resources, metrics, events, current_day
+    return (
+        grid,
+        total_daily_income,
+        player_resources,
+        metrics,
+        events,
+        current_day
+    )
 
 
 def confirm_exit():
@@ -874,16 +914,19 @@ def show_goodbye_message():
     """
     Display a goodbye message and prompt the player to play again.
     """
-    print(Colour.GREEN + "Thank you for playing McGee Metropolis!" + Colour.ENDC)
+    print(Colour.GREEN + "Thank you for playing!" + Colour.ENDC)
     while True:
         choice = input(
-            Colour.BOLD + "\nWould you like to play again? (yes/no): " + Colour.ENDC
-            ).strip().lower()
+            Colour.BOLD + "\nWould you like to play again? (yes/no): " +
+            Colour.ENDC
+        ).strip().lower()
         if choice == 'yes':
             clear_screen()
             return True
         elif choice == 'no':
-            print(Colour.GREEN + "Goodbye! Hope to see you again!" + Colour.ENDC)
+            print(
+                Colour.GREEN + "Goodbye! Hope to see you again!" + Colour.ENDC
+            )
             exit()
         else:
             print("Invalid input. Please type 'yes' or 'no'.")
@@ -906,7 +949,8 @@ def main():
         'Health': 50
     }
     while True:
-        grid, total_daily_income, player_resources, metrics, events, current_day = start_new_game()
+        grid, total_daily_income, player_resources = start_new_game()
+        metrics, events, current_day = start_new_game()
         game_over = False
         last_event = None
         zones_built_today = 0  # Track zones built in the current day
@@ -921,7 +965,9 @@ def main():
             print_metrics(metrics)
 
             print(f"Day {current_day}: Good Morning! A New day has started...")
-            last_event = apply_random_event(events, player_resources, last_event)
+            last_event = apply_random_event(
+                events, player_resources, last_event
+            )
             regenerate_resources(player_resources, total_daily_income)
             if not check_metrics(metrics):
                 print(
@@ -950,7 +996,10 @@ def main():
                 elif action == 'restart':
                     if confirm_restart():  # Confirm restart decision
                         print("Restarting the game.")
-                        grid, total_daily_income, player_resources, metrics, events, current_day = start_new_game(reset_resources=True)
+                        (
+                            grid, total_daily_income, player_resources, 
+                            metrics, events, current_day
+                        ) = start_new_game(reset_resources=True)
                         last_event = None
                         continue
                 elif action == 'help':
@@ -958,7 +1007,8 @@ def main():
                 elif action == 'exit':
                     if confirm_exit():
                         if show_goodbye_message():
-                            reset_resources_to_default()  # Reset resources on exit
+                            # Reset resources on exit
+                            reset_resources_to_default()
                             break
                 else:
                     print("Invalid. Choose 'zone', 'next', 'restart', 'help', or 'exit'.")
@@ -972,7 +1022,8 @@ def main():
                 elif action == 'exit':
                     if confirm_exit():
                         if show_goodbye_message():
-                            reset_resources_to_default()  # Reset resources on exit
+                            # Reset resources on exit
+                            reset_resources_to_default()
                             break
 
             update_resources_in_sheet(player_resources)
