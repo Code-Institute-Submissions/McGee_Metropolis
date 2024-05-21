@@ -1,8 +1,7 @@
 """
-McGee Metropolis: A city-building game.
-This contains the implementation of McGee Metropolis, a game where
-players build and manage a city, balancing resources and metrics to achieve
-goals within a set number of days.
+McGee Metropolis: A city-building game. This contains the implementation of
+McGee Metropolis, a game where players build and manage a city, balancing
+resources and metrics to achieve goals within a set number of days.
 """
 import random
 import os
@@ -59,7 +58,7 @@ SHEET = GSPREAD_CLIENT.open('McGee_Metropolis')
 
 
 def clear_screen():
-    """Clear the console screen.
+    """
     Detects the operating system and clears the screen.
     """
     system_name = platform.system()
@@ -224,9 +223,8 @@ def show_tips():
 def fetch_zone_data():
     """
     Fetch the data of each zone type from Google Sheets.
-    Returns:
-    dict: A dictionary with zone types as keys and a dictionary of count
-    and income as values.
+    Returns: dict: A dictionary with zone types as keys and a dictionary of
+    count and income as values.
     """
     try:
         zone_sheet = SHEET.worksheet('zones')
@@ -236,8 +234,7 @@ def fetch_zone_data():
             zone_type = row[0]
             count = row[1].strip()
             income = row[2].strip()
-            # Validate and convert count and income
-            if count.isdigit():
+            if count.isdigit():  # Validate and convert count and income
                 count = int(count)
             else:
                 print(f"Invalid count for {zone_type}: {count}")
@@ -261,8 +258,7 @@ def initialize_grid(size):
     """
     Initialise an empty game grid with the specified size.
     Args: size (int): The size of the grid.
-    Returns:
-        list: A 2D list representing the empty game grid.
+    Returns: list: A 2D list representing the empty game grid.
     """
     return [['-' for _ in range(size)] for _ in range(size)]
 
@@ -270,11 +266,9 @@ def initialize_grid(size):
 def initialize_random_grid(size, zone_data):
     """
     Initialise the game grid with random zones based on fetched counts.
-    Args:
-        size (int): The size of the grid.
+    Args: size (int): The size of the grid.
         zone_data (dict): A dictionary containing zone types and their data.
-    Returns:
-        tuple: A tuple containing the initialied grid and the total daily
+    Returns: tuple: A tuple containing the initialied grid and the total daily
         income.
     """
     grid = [['-' for _ in range(size)] for _ in range(size)]
@@ -425,7 +419,6 @@ def update_resources_in_sheet(player_resources):
         for resource_type, values in player_resources.items():
             # Find the cell with the resource type
             cell = resources_sheet.find(resource_type)
-            # Update the cell values
             resources_sheet.update_cell(
                 cell.row,
                 cell.col + 1,
@@ -453,7 +446,6 @@ def reset_resources_to_default():
         # Iterate over the default_resources dictionary and update the sheet
         for resource, values in default_resources.items():
             current_value, regeneration_rate = values
-            # Find the cell with the resource type
             cell = resources_sheet.find(resource)
             # Update the resource value to default
             resources_sheet.update_cell(cell.row, cell.col + 1, current_value)
@@ -522,7 +514,6 @@ def handle_zone_action(grid, player_resources, metrics):
                     "Enter zone type - R (Residential), C (Commercial),"
                     "I (Industrial), S (School), H (Hospital): "
                 ).upper()
-                # Map input to full names for internal logic
                 zone_map = {
                     'R': 'Residential',
                     'C': 'Commercial',
@@ -639,8 +630,7 @@ def apply_impact(player_resources, impact_type, impact_value):
     }
 
     adjusted_impact_type = impact_type_map.get(impact_type, None)
-    # Check if the mapping was successful
-    if not adjusted_impact_type:
+    if not adjusted_impact_type:  # Check if the mapping was successful
         return  # Exit if no valid mapping exists
     update_resource(player_resources, adjusted_impact_type, impact_value)
 
@@ -663,8 +653,7 @@ def update_resource(player_resources, resource_type, impact_value):
 def fetch_metrics():
     """
     Fetch the initial metrics for the game.
-    Returns:
-        dict: A dictionary containing the initial metrics.
+    Returns: dict: A dictionary containing the initial metrics.
     """
     return {
         'Employment Rate': 70,
@@ -677,10 +666,9 @@ def fetch_metrics():
 def check_metrics(metrics):
     """
     Check if any metrics have fallen below or above critical levels.
-    Args:
-        metrics (dict): A dictionary containing the current metrics.
-    Returns:
-        bool: True if all metrics are within acceptable levels, False if not.
+    Args: metrics (dict): A dictionary containing the current metrics.
+    Returns: bool: True if all metrics are within acceptable levels,
+    False if not.
     """
     min_values = {
         'Employment Rate': 50,
@@ -703,8 +691,7 @@ def check_metrics(metrics):
 def update_metrics(metrics, player_resources, zone_type, amount):
     """
     Update the metrics based on the type and amount of zone built.
-    Args:
-        metrics (dict): A dictionary containing the current metrics.
+    Args: metrics (dict): A dictionary containing the current metrics.
         player_resources (dict): A dictionary containing the player resources.
         zone_type (str): The type of zone built.
         amount (int): The number of zones built.
@@ -736,8 +723,7 @@ def update_metrics(metrics, player_resources, zone_type, amount):
 def print_metrics(metrics):
     """
     Print the current metrics in a formatted table.
-    Args:
-        metrics (dict): A dictionary containing the current metrics.
+    Args: metrics (dict): A dictionary containing the current metrics.
     """
     header = (
         f"{Colour.HEADER}{'Metric Type':<27}{Colour.ENDC}"
@@ -802,8 +788,7 @@ def print_help():
 def confirm_restart():
     """
     Confirm the decision to restart the game.
-    Returns:
-        bool: True if the player confirms restart, False otherwise.
+    Returns: bool: True if the player confirms restart, False otherwise.
     """
     response = input("Are you sure you want to restart the game? (yes/no): ")
     return response.lower() == 'yes'
@@ -843,8 +828,7 @@ def start_new_game(reset_resources=True):
 def confirm_exit():
     """
     Confirm before exiting the game.
-    Returns:
-        bool: True if the player confirms exit, False otherwise.
+    Returns: bool: True if the player confirms exit, False otherwise.
     """
     # Confirm before exiting the game
     confirm = input(
@@ -900,9 +884,8 @@ def main():
             print("McGee Metropolis City Map:")
             print_grid(grid)
             print("\nCurrent Resources and Metrics:")
-            # Function to print resources in a formatted table
+            # Functions to print resources and metrics in a formatted table
             print_resources(player_resources)
-            # Function to print metrics in a formatted table
             print_metrics(metrics)
             print(f"Day {current_day}: Good Morning! A New day has started...")
             last_event = apply_random_event(
@@ -953,8 +936,7 @@ def main():
                 elif action == 'exit':
                     if confirm_exit():
                         if show_goodbye_message():
-                            # Reset resources on exit
-                            reset_resources_to_default()
+                            reset_resources_to_default()  # Reset resources
                             return
                 else:
                     print(
@@ -973,8 +955,7 @@ def main():
                 elif action == 'exit':
                     if confirm_exit():
                         if show_goodbye_message():
-                            # Reset resources on exit
-                            reset_resources_to_default()
+                            reset_resources_to_default()  # Reset resources
                             return
             update_resources_in_sheet(player_resources)
         if game_over or current_day > 30:
@@ -989,8 +970,7 @@ def main():
                 print("Congratulations! You have won!")
             else:
                 print("Unfortunately, you have lost this time.")
-            # Prompt to restart or exit
-            while True:
+            while True:  # Prompt to restart or exit
                 action = input(
                     "\nThe game is over, please choose (restart/exit): "
                 ).lower()
