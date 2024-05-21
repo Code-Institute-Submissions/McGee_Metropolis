@@ -61,11 +61,12 @@ def clear_screen():
     """
     Detects the operating system and clears the screen.
     """
-    system_name = platform.system()
-    if system_name == "Windows":
-        os.system("cls")
-    else:
-        os.system("clear")
+    # system_name = platform.system()
+    # if system_name == "Windows":
+    #     os.system("cls")
+    # else:
+    #     os.system("clear")
+    print("\033c", end="")
 
 
 def show_intro():
