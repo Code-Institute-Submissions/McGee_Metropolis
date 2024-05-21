@@ -946,7 +946,8 @@ def main():
                             metrics, events, current_day
                         ) = start_new_game(reset_resources=True)
                         last_event = None
-                        continue
+                        game_over = False
+                        break
                 elif action == 'help':
                     print_help()
                 elif action == 'exit':
@@ -954,7 +955,7 @@ def main():
                         if show_goodbye_message():
                             # Reset resources on exit
                             reset_resources_to_default()
-                            break
+                            return
                 else:
                     print(
                         "Invalid. Choose 'zone', 'next', 'restart', "
@@ -974,25 +975,44 @@ def main():
                         if show_goodbye_message():
                             # Reset resources on exit
                             reset_resources_to_default()
-                            break
+                            return
             update_resources_in_sheet(player_resources)
-            if game_over or current_day > 30:
-                money_goal_met = (
-                    player_resources['Money']['Current Value'] >= monetary_goal
-                )
-                metrics_goal_met = all(
-                    value >= min_metrics[metric]
-                    for metric, value in metrics.items()
-                )
-                if money_goal_met and metrics_goal_met:
-                    print("Congratulations! You have won!")
-                else:
-                    print("Unfortunately, you have lost this time.")
-                if not confirm_restart() or game_over:
-                    if show_goodbye_message():
-                        continue
-                    else:
+        if game_over or current_day > 30:
+            money_goal_met = (
+                player_resources['Money']['Current Value'] >= monetary_goal
+            )
+            metrics_goal_met = all(
+                value >= min_metrics[metric]
+                for metric, value in metrics.items()
+            )
+            if money_goal_met and metrics_goal_met:
+                print("Congratulations! You have won!")
+            else:
+                print("Unfortunately, you have lost this time.")
+            # Prompt to restart or exit
+            while True:
+                action = input(
+                    "\nThe game is over, please choose (restart/exit): "
+                ).lower()
+                if action == 'restart':
+                    if confirm_restart():  # Confirm restart decision
+                        print("Restarting the game.")
+                        (
+                            grid, total_daily_income, player_resources,
+                            metrics, events, current_day
+                        ) = start_new_game(reset_resources=True)
+                        last_event = None
+                        game_over = False
                         break
+                    elif action == 'exit':
+                        if confirm_exit():
+                            if show_goodbye_message():
+                                reset_resources_to_default()
+                                return
+                    else:
+                        print("Invalid input. Type 'restart' or 'exit'.")
+                if game_over:
+                    break  # Exit the outer while loop and end the game
     show_intro()  # Show introduction and instructions
 
 
