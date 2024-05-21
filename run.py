@@ -4,8 +4,6 @@ McGee Metropolis, a game where players build and manage a city, balancing
 resources and metrics to achieve goals within a set number of days.
 """
 import random
-import os
-import platform
 import time
 import gspread
 from google.oauth2.service_account import Credentials
@@ -59,13 +57,8 @@ SHEET = GSPREAD_CLIENT.open('McGee_Metropolis')
 
 def clear_screen():
     """
-    Detects the operating system and clears the screen.
+    Clears the screen.
     """
-    # system_name = platform.system()
-    # if system_name == "Windows":
-    #     os.system("cls")
-    # else:
-    #     os.system("clear")
     print("\033c", end="")
 
 
