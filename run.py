@@ -919,6 +919,7 @@ def main():
                 )
                 game_over = True
                 continue
+            clear_screen()  # Clear the screen before showing the new day
             if zones_built_today < MAX_ZONES_PER_DAY:
                 action = input(
                     "\nChoose the action you would like to take:"
@@ -931,6 +932,7 @@ def main():
                 if action == 'zone':
                     if handle_zone_action(grid, player_resources, metrics):
                         zones_built_today += 1
+                    clear_screen()  # Clear the screen before new grid
                     print_grid(grid)
                 elif action == 'next':
                     current_day += 1  # Increment the day counter
@@ -958,9 +960,7 @@ def main():
                         "'help', or 'exit'."
                     )
             else:
-                print(
-                    "You've reached the max number of zones built today."
-                )
+                print("Max number of zones built today.")
                 action = input(
                     "\nPress 'next' to move to the next day or 'exit' to "
                     "exit the game: "
