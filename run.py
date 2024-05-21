@@ -919,7 +919,6 @@ def main():
                 )
                 game_over = True
                 continue
-            clear_screen()  # Clear the screen before showing the new day
             if zones_built_today < MAX_ZONES_PER_DAY:
                 action = input(
                     "\nChoose the action you would like to take:"
@@ -932,8 +931,12 @@ def main():
                 if action == 'zone':
                     if handle_zone_action(grid, player_resources, metrics):
                         zones_built_today += 1
-                    clear_screen()  # Clear the screen before new grid
+                    clear_screen()
+                    print("McGee Metropolis City Map:")
                     print_grid(grid)
+                    print("\nCurrent Resources and Metrics:")
+                    print_resources(player_resources)
+                    print_metrics(metrics)
                 elif action == 'next':
                     current_day += 1  # Increment the day counter
                     zones_built_today = 0  # Reset the counter for the new day
