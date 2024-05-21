@@ -2,8 +2,7 @@
 McGee Metropolis: A city-building game.
 This contains the implementation of McGee Metropolis, a game where
 players build and manage a city, balancing resources and metrics to achieve
-goals within a set number of days. The game uses Google Sheets to store and
-retrieve data for game state and resources.
+goals within a set number of days.
 """
 import random
 import os
@@ -90,7 +89,6 @@ def show_intro():
     Your goal is to reach 2000000 in money within 30 days whilst
     maintaining the Employment Rate, Crime Rate, Happiness Index, & Health.
     Every move has an impact on your resources & metrics, so plan carefully.
-    EG. If you build a residential zone your employment rate will decrease.
     """
     print(Colour.GREEN + logo + Colour.ENDC)
     for char in welcome_message:
@@ -262,8 +260,7 @@ def fetch_zone_data():
 def initialize_grid(size):
     """
     Initialise an empty game grid with the specified size.
-    Args:
-        size (int): The size of the grid.
+    Args: size (int): The size of the grid.
     Returns:
         list: A 2D list representing the empty game grid.
     """
@@ -926,7 +923,8 @@ def main():
                     "\n2. Go to the next day  "
                     "\n3. Access help  "
                     "\n4. Restart the game  "
-                    "\n5. Exit the game: (zone/next/help/restart/exit):  "
+                    "\n5. Exit the game:"
+                    "\nChoose: (zone/next/help/restart/exit):  "
                 ).lower()
                 if action == 'zone':
                     if handle_zone_action(grid, player_resources, metrics):
