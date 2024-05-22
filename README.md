@@ -2,7 +2,7 @@
 
 This file provides a guide to McGee Metropolis, a dynamic city-building game I have developed. This game challenges players to manage and expand a virtual city by strategically placing zones, balancing resources, and responding to unexpected events. Developed with Python, McGee Metropolis provides an immersive experience where players must navigate the complexities of urban management. The objective is to achieve financial success while maintaining the city's overall well-being, ensuring a balanced and thriving city.
 
-The live game can be viewed here - <a href=" https://mcgee-metropolis-13f84b689485.herokuapp.com/" target="_blank" rel="noopener">McGee Metropolis</a>
+The live game can be viewed here - <a href="https://mcgee-metropolis-13f84b689485.herokuapp.com/" target="_blank" rel="noopener">McGee Metropolis</a>
 
 ![Welcome Screenshot]( screenshots/welcome-screenshot.png)
 
@@ -21,7 +21,7 @@ The live game can be viewed here - <a href=" https://mcgee-metropolis-13f84b6894
         * [Skeleton](<#skeleton>)
         * [Surface](<#surface>)
 * [**Features**](<#features>)
-    * [**Generic Game Features**](<#generic-game-features>
+    * [**Generic Game Features**](<#generic-game-features>)
         * [City Grid](<#city-grid>)
         * [Zones](<#zones>)
         * [Resources](<#resources>)
@@ -70,6 +70,7 @@ As the creator of McGee Metropolis, this project is inspired by the games I used
 * Encourage Strategic Thinking: The game is designed to cultivate strategic planning and decision-making skills. By managing resources and responding to random events, players will learn the importance of foresight and adaptability in urban management.
 * Promote Real-world Understanding: By simulating real-world urban management challenges, the game aims to foster a deeper appreciation for the complexities of city planning. Players will gain insights into the delicate balance needed to maintain a thriving city.
 * Encourage Repeated Play and Continuous Learning: Incorporating elements that track progress and provide feedback aims to motivate players to improve their strategies. Achieving the game’s monetary and metric goals is presented as a significant accomplishment, encouraging repeated play and continuous improvement.
+
 [Back to top](<#contents>)
 
 ## Target Audience
@@ -86,21 +87,27 @@ In developing McGee Metropolis, defining the target audience was crucial to ensu
 Based on the target audience, I have defined three possible user stories for McGee Metropolis:
 <details><summary><b>1. Strategy Game Enthusiasts</b></summary>
 * As a strategy game enthusiast, I want McGee Metropolis to offer complex challenges that require strategic thinking, so I can enjoy the depth and intricacies of city-building.
+
 * I expect the game to provide a variety of scenarios and events that test my resource management skills, keeping the gameplay engaging and dynamic.
+
 * The game should have a detailed and intuitive interface, allowing me to easily navigate and manage different aspects of my city.
 
 </details><hr>
 
 <details><summary><b>2. General Public Interested in Urban Development</b></summary>
 * As someone interested in urban development, I want McGee Metropolis to give me insights into how cities are planned and managed, offering a realistic simulation of the challenges faced by city planners.
+
 * I expect the game to present real-world scenarios and problems, allowing me to explore various solutions and their outcomes.
+
 * The game should have detailed graphics and an immersive environment, enhancing my understanding and enjoyment of the city-building process.
 
 </details><hr>
 
 <details><summary><b>3. Gamers Seeking a Challenge</b></summary>
 * As a gamer looking for a challenge, I want McGee Metropolis to provide difficult and rewarding gameplay that tests my strategic and problem-solving skills.
+
 * I expect the game to feature escalating difficulty levels, keeping me engaged and motivated to improve my performance.
+
 * The game should offer achievements and rewards for reaching milestones, encouraging me to continue playing and mastering the game.
 
 </details><hr>
@@ -307,11 +314,12 @@ The deployment to Github and Heroku followed these steps, which can be easily re
 6.	Add Buildpacks: Still under the "Settings" tab, locate the "Buildpacks" section and click on "Add buildpack". Select "Python" and save your choice. Add another buildpack by clicking "Add buildpack" again and select "node.js". Ensure that the buildpacks are listed in the following order: Python first, followed by Node.js.
 7.	Deploy the Application: Navigate to the "Deploy" tab located at the top of the dashboard. Under "Deployment method", select "GitHub" to connect your Heroku app to the GitHub repository. Authenticate and authorise Heroku to access the GitHub account if prompted. Then, search for the project's repository name and click "Connect" to link it to Heroku. Optionally, enable automatic deploys to allow Heroku to automatically deploy new code every time you push updates to the connected repository. To manually deploy the  project immediately, click the "Deploy Branch" button.
 
-Alternatively, the game can be accessed via Heroku via this live <a href="https://mcgee-metropolis-13f84b689485.herokuapp.com/" target="_blank" rel="noopener">LINK/a>
+Alternatively, the game can be accessed via Heroku via this live <a href="https://mcgee-metropolis-13f84b689485.herokuapp.com/" target="_blank" rel="noopener">LINK</a>
+
 
 ## Forking the repository
 
-This <a href="https://github.com/SophieMcGee/McGee_Metropolis" target="_blank" rel="noopener">LINK/a> is to the project Github repository. 
+This <a href="https://github.com/SophieMcGee/McGee_Metropolis" target="_blank" rel="noopener">LINK</a> is to the project Github repository. 
 
 To create a copy of the repository please use the following steps:
 
@@ -351,7 +359,6 @@ https://pep8ci.herokuapp.com/#
 During the coding stage the errors found related to the length of the characters within some lines extending to more than 80 characters and to trailing whitespace at the end of some lines of code. Once the build of the game was completed the code was run through the validator and no errors are present: 
 ![Data Validator](screenshots/validator.png)
 
-The tests resulted in the following:
 
 [Back to top](<#contents>)
 
@@ -382,6 +389,8 @@ Manual testing:
 
 
 > User story 3 - Gamers Seeking a Challenge "As a gamer looking for a challenge, I want McGee Metropolis to provide difficult and rewarding gameplay that tests my strategic and problem-solving skills. I expect the game to feature escalating difficulty levels, keeping me engaged and motivated to improve my performance. The game should offer achievements and rewards for reaching milestones, encouraging me to continue playing and mastering the game."
+
+Manual testing:
 | User Step | Description | Pass or Fail |
 |:----------|:------------|:------------:|
 |1| User starts the game and reads the instructions, understanding the challenge ahead |Pass|
@@ -425,7 +434,6 @@ The project was tested at an early stage from Heroku deployment, alongside testi
 | Prompt for Restart/Exit After Game Over | The game prompts the user to restart or exit after a game over condition is met. |Pass|
 | User Input for Restart/Exit | The game handles user input for restarting or exiting correctly after game over. |Pass|
 | Metrics Critical Level Check | The game continuously checks if any metrics fall below or exceed critical levels and ends the game if so. |Pass|
-
 | Random Grid Initialisation| The game initialises with a random grid of zones based on fetched data from Google Sheets. |Pass|
 | Custom Messages for Different Events | Custom messages are displayed for different random events, describing their impacts on the city. |Pass|
 | Update of Resources in Google Sheets | Changes in resources are updated back to Google Sheets after each user action. |Pass|
@@ -450,13 +458,11 @@ The project was tested at an early stage from Heroku deployment, alongside testi
 * Solution: Replaced with more specific exception handling using GSpreadException to handle Google Sheets related errors.
 
 
-
-
-4. Bug 1: Incomplete Screen Clearing on Day Transition
+4. Incomplete Screen Clearing on Day Transition
 * Issue: When transitioning to a new day, the terminal displayed new grids below the previous ones instead of clearing the screen.
 * Solution: Implemented the clear_screen() function to detect the operating system and clear the console screen accordingly. The function used os.system("cls") for Windows and os.system("clear") for other operating systems. This worked perfectly within the Gitpod terminal testing window. However, when deployed to Heroku a further issue was found where the full screen was not being cleared in between each day, as the grid and table headers were still displaying. This was fixed by removing the original function content and adding print("\033c", end="") to prevent users from scrolling upwards beyond the printed day.
 
-5. Bug 2: Immediate Restart After Game Over
+5. Immediate Restart After Game Over
 
 * Issue: When the game ended due to low metrics, it displayed the game-over message briefly before immediately restarting, which did not make it clear to the player that the game was over.
 * Solution: I added a prompt to allow the player to choose whether to restart or exit the game after a game-over condition was met. This was done by including a while loop to wait for user input before proceeding. As a result, the game no longer immediately restarts after a game-over message. Instead, it waits for the player to choose to restart or exit, with the restart option taking them back to a reset day 1. 
@@ -503,6 +509,7 @@ The following sources were used as a guide for the code within this project:
 
 * Random Module
    * Usage of the random module for shuffling positions and selecting random events was guided by the Python random module documentation. - https://docs.python.org/3/library/random.html
+   
 * Time Module
    * The implementation of timed messages and delays utilised the time module, as detailed in the Python time module documentation. - https://docs.python.org/3/library/time.html 
 
@@ -514,7 +521,7 @@ The following sources were used as a guide for the code within this project:
     * Comprehensive error handling using try-except blocks for handling Google Sheets errors and input validation was guided by the Python documentation on exceptions.- https://docs.python.org/3/tutorial/errors.html
 
 * Game Mechanics
-•	    * Concepts for resource management and regeneration rates were developed based on game design principles discussed in various game development forums and resources, including Gamasutra and GameDev.net.
+    * Concepts for resource management and regeneration rates were developed based on game design principles discussed in various game development forums and resources, including Gamasutra and GameDev.net.
 https://www.gamasutra.com/ 
 https://www.gamedev.net/ 
     
